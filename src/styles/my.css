@@ -1,0 +1,92 @@
+.el-table .warning-row {
+    background: oldlace;
+}
+.upload-file .el-tag + .el-tag {
+  margin-left: 10px;
+}
+.upload-file .button-new-tag {
+  margin-left: 10px;
+  height: 32px;
+  line-height: 30px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.upload-file .input-new-tag {
+  width: 90px;
+  margin-left: 10px;
+  vertical-align: bottom;
+}
+
+.filter-form .el-form-item {
+  margin-bottom: 10px;
+}
+
+.el-card__header {
+  padding: 13px 20px;
+}
+
+.el-card__body {
+  padding: 10px !important;
+}
+.programListWrap {
+  user-select: none
+}
+.programListWrap .pagination-container {
+  padding: 15px 0 !important;
+}
+.programListWrap .el-table .el-button {
+  padding: 0 !important;
+}
+.programListWrap .el-table .cell {
+  padding: 0 3px;
+}
+.programListWrap .el-table td {
+  padding: 3px 0;
+}
+.programListWrap .el-table .cell {
+  line-height: 20px;
+}
+.programListWrap.tempEpgTableWrap .el-table__body tr.current-row>td {
+  border-top: 1px solid red;
+  border-bottom: 1px solid red;
+  background-color: transparent !important;
+}
+.programListWrap.tempEpgTableWrap .el-table__body tr.current-row>td:first-child {
+  border-left: 1px solid red;
+}
+.programListWrap.tempEpgTableWrap .el-table__body tr.current-row>td:last-child {
+  border-right: 1px solid red;
+}
+.programListWrap.tempEpgTableWrap .el-table tbody tr:hover>td { 
+    background-color: transparent !important;
+}
+tr.bg-gray {
+  background-color: #DCDFE6 !important;
+}
+tr.bg-red {
+  background-color: #F56C6C !important;
+  color: #fff;
+}
+tr.bg-blue {
+  background-color: #409EFF !important;
+  color: #fff;
+}
+tr.bg-red .el-button--text, tr.bg-blue .el-button--text {
+  color: #fff;
+}
+
+.channelTabs.routerTabs .el-radio-button__inner {
+  padding: 0 !important;
+}
+
+.channelTabs.routerTabs .el-radio-button__inner .radioRouter {
+  display: inline-block;
+  padding: 10px 20px;
+}
+
+.updateTimeWrap .el-date-editor.el-input, .updateTimeWrap .el-date-editor.el-input__inner {
+  width: auto;
+}
+.updateTimeWrap .el-input__inner {
+  padding-right: 10px;
+}
