@@ -58,7 +58,7 @@
       </el-table-column>
       <el-table-column label="操作" align="center">
         <template slot-scope="{row, $index}">
-          <el-button type="text" size="medium" @click="editHandle(row, $index)">编辑</el-button>
+          <!-- <el-button type="text" size="medium" @click="editHandle(row, $index)">编辑</el-button> -->
           <el-button type="text" size="medium" @click="delHandler(row.id, $index)">删除</el-button>
         </template>
       </el-table-column>
@@ -110,12 +110,12 @@ export default {
     list(val) {
       this.routes.map((item) => {
         if (item.path === '/deviceItem') {
+          item.children = []
           val.map((it) => {
             var rout = {
-              path: `detail_${it.id}`,
+              path: `detail/${it.id}`,
               component: () => import('@/views/device-item/index'),
-              name: 'DeviceItem',
-              meta: { title: `${it.name}`, icon: 'el-icon-video-camera' }
+              meta: { title: `${it.name}`, icon: 'el-icon-position' }
             }
             item.children.push(rout)
           })
@@ -125,7 +125,6 @@ export default {
   },
   created() {
     this.getList()
-    console.log(this.routes)
   },
   methods: {
     getList() {

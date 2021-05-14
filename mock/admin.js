@@ -1,80 +1,109 @@
-import request from '@/utils/request'
+const Mock = require('mockjs')
 
-export function fetchList(query) {
-  var params = {
-    page: query.page - 1,
-    per_page: query.limit
-  }
-  if (query.create_time_range && query.create_time_range.length) {
-    params.create_time_range = query.create_time_range
-  }
-  if (query.username !== '') {
-    params.username = query.username
-  }
-  return request({
+const List = []
+const count = 100
+
+const baseContent = '<p>I am testing data, I am testing data.</p><p><img src="https://wpimg.wallstcn.com/4c69009c-0fd4-4153-b112-6cb53d1cf943"></p>'
+const image_uri = 'https://wpimg.wallstcn.com/e4558086-631c-425c-9430-56ffb46e70b3'
+
+for (let i = 0; i < count; i++) {
+  List.push(Mock.mock({
+    id: '@increment',
+    create_time: '@datetime',
+    username: '@first',
+    mobile: '18601234567',
+    password: '',
+    'isadmin|1': [0, 1, 2],
+    activity: '@increment',
+    'status|1': [0, 1, 2]
+  }))
+}
+
+const user = Mock.mock({
+  id: '@increment',
+  create_time: '@datetime',
+  username: '@first',
+  mobile: '18601234567',
+  password: '',
+  'isadmin|1': [0, 1, 2],
+  activity: '@increment',
+  'status|1': [0, 1, 2]
+})
+
+module.exports = [
+  {
     url: '/admin/v1/users',
-    method: 'get',
-    params
-  })
-}
+    type: 'get',
+    response: config => {
+      const { importance, type, title, page = 0, per_page = 20, sort } = config.query
 
-export function actived(query) {
-  return request({
-    url: '/admin/v1/users/' + query.id + '/actived',
-    method: 'put'
-  })
-}
+      let mockList = List.filter(item => {
+        if (importance && item.importance !== +importance) return false
+        if (type && item.type !== type) return false
+        if (title && item.title.indexOf(title) < 0) return false
+        return true
+      })
 
-export function inactived(query) {
-  return request({
-    url: '/admin/v1/users/' + query.id + '/inactived',
-    method: 'put'
-  })
-}
+      if (sort === '-id') {
+        mockList = mockList.reverse()
+      }
 
-export function createUser(data) {
-  return request({
-    url: '/admin/v1/users',
-    method: 'post',
-    data: data
-  })
-}
+      const pageList = mockList.filter((item, index) => index < per_page * (page + 1) && index >= per_page * page)
 
-export function updateUser(data) {
-  return request({
-    url: '/admin/v1/users/' + data.id,
-    method: 'put',
-    data: {
-      username: data.username,
-      mobile: data.mobile
+      return {
+        total: mockList.length,
+        items: pageList
+      }
     }
-  })
-}
-
-export function deleteUser(query) {
-  return request({
-    url: '/admin/v1/users/' + query.id,
-    method: 'delete'
-  })
-}
-
-export function updatePwd(data) {
-  return request({
+  },
+  {
+    url: '/admin/v1/users/[0-9]',
+    type: 'put',
+    response: config => {
+      return user
+    }
+  },
+  {
+    url: '/admin/v1/users',
+    type: 'post',
+    response: config => {
+      return user
+    }
+  },
+  {
+    url: '/admin/v1/users/[0-9]',
+    type: 'delete',
+    response: config => {
+      return user
+    }
+  },
+  {
+    url: '/admin/v1/users/[0-9]/actived',
+    type: 'put',
+    response: config => {
+      return user
+    }
+  },
+  {
+    url: '/admin/v1/users/[0-9]/inactived',
+    type: 'put',
+    response: config => {
+      return user
+    }
+  },
+  {
     url: '/admin/v1/users/changepassword',
-    method: 'put',
-    data: {
-      old: data.old,
-      new: data.new
+    type: 'put',
+    response: config => {
+      return user
     }
-  })
-}
+  },
+  {
+    url: '/admin/v1/users/[0-9]/resetpassword',
+    type: 'put',
+    response: config => {
+      return user
+    }
+  }
+]
 
-export function resetPwd(data) {
-  return request({
-    url: '/admin/v1/users/' + data.id + '/resetpassword',
-    method: 'put',
-    data: {
-      password: data.password
-    }
-  })
-}

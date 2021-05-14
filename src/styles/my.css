@@ -1,6 +1,6 @@
-.el-table .warning-row {
+/*.el-table .warning-row {
     background: oldlace;
-}
+}*/
 .upload-file .el-tag + .el-tag {
   margin-left: 10px;
 }
@@ -89,4 +89,20 @@ tr.bg-red .el-button--text, tr.bg-blue .el-button--text {
 }
 .updateTimeWrap .el-input__inner {
   padding-right: 10px;
+}
+
+.table-expand .el-form-item__label {
+  min-width: 80px;
+}
+.table-expand .el-form-item__content {
+  min-width: 80px;
+}
+
+/*多画面网格布局 样式*/
+.gridItem {
+  font-size: 20px;
+  text-align: center;
+  border: 1px solid #e5e4e9;
+  background-color: #f8d29d;
+  cursor: pointer;
 }
