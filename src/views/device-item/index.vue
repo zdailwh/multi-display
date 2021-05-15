@@ -24,7 +24,7 @@
         <div class="formWrap">
           <el-form ref="form2" :model="form2" :rules="ruleValidateForm2" label-width="120px">
             <el-form-item label="画框模板" prop="temp">
-              <el-select v-model="form2.temp" placeholder="请选择画框模板" style="width: 100%;" @change="selectTemp">
+              <el-select v-model="form2.temp" placeholder="请选择画框模板" style="width: 100%;">
                 <el-option value="2" label="2 x 2" />
                 <el-option value="3" label="3 x 3" />
                 <el-option value="4" label="4 x 4" />
@@ -33,7 +33,7 @@
               </el-select>
             </el-form-item>
             <el-form-item label="合并模板" prop="tempMerge">
-              <el-select v-model="form2.tempMerge" placeholder="请选择合并模板" style="width: 100%;" @change="selectTempMerge">
+              <el-select v-model="form2.tempMerge" placeholder="请选择合并模板" style="width: 100%;">
                 <el-option value="" label="不合并" />
                 <el-option :disabled="form2.temp <= 2" value="2" label="2 x 2" />
                 <el-option :disabled="form2.temp <= 3" value="3" label="3 x 3" />
@@ -44,7 +44,7 @@
             </el-form-item>
             <el-form-item label="画框绘制">
               <div id="gridWrap" :style="tempClass">
-                <div v-for="(item,k) in gridTotal" :key="k" class="gridItem" :style="{ gridArea: item.gridArea }" @click="mergeHandle(item.serial)">{{ item.serial }}</div>
+                <div v-for="(item,k) in gridTotal" :key="k" class="gridItem" :style="{ gridArea: item.gridArea, display: item.serial > gridShowNums ? 'none': 'block' }" @click="mergeHandle(item.serial)">{{ item.serial }}</div>
               </div>
             </el-form-item>
             <el-form-item>
@@ -54,18 +54,29 @@
           </el-form>
         </div>
       </el-tab-pane>
-      <el-tab-pane label="通道配置">通道配置内容</el-tab-pane>
-      <el-tab-pane label="操控">操控内容</el-tab-pane>
-      <el-tab-pane label="报警信息">报警信息内容</el-tab-pane>
+      <el-tab-pane label="通道配置">
+        <PassSet :allchannels="allChannels" />
+      </el-tab-pane>
+      <el-tab-pane label="操控">
+        <Operate />
+      </el-tab-pane>
+      <el-tab-pane label="报警信息">
+        <Warn />
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
 
 <script>
-
+import PassSet from './PassSet'
+import Operate from './Operate'
+import Warn from './Warn'
+import { getAllChannels } from '@/api/channel'
 export default {
+  components: { PassSet, Operate, Warn },
   data() {
     return {
+      allChannels: [],
       id: null,
       form1: {
         deviceip: '',
@@ -88,6 +99,7 @@ export default {
         tempMerge: ''
       },
       gridTotal: [],
+      gridShowNums: 0,
       isMerged: false,
       tempClass: {},
       ruleValidateForm2: {
@@ -101,6 +113,10 @@ export default {
     'form2.temp': function(val) {
       this.form2.tempMerge = ''
       this.isMerged = false
+      this.gridTotal.map((item) => {
+        item.gridArea = ''
+      })
+      this.gridShowNums = this.form2.temp * this.form2.temp
       var gridWrap = document.querySelector('#gridWrap')
       if (gridWrap) {
         // 修改网格容器样式
@@ -120,31 +136,41 @@ export default {
           gridArr.push({
             serial: i + 1,
             gridArea: '',
-            x: '',
-            y: '',
-            w: '',
-            h: ''
+            display_x: '',
+            display_y: '',
+            display_w: '',
+            display_h: ''
           })
         }
         this.gridTotal = gridArr
       }
+    },
+    'form2.tempMerge': function(val) {
+      this.isMerged = false
+      this.gridTotal.map((item) => {
+        item.gridArea = ''
+      })
+      this.gridShowNums = this.form2.temp * this.form2.temp
     }
   },
   created() {
     this.id = this.$route.params.id
   },
+  mounted() {
+    this.getAllChannels()
+  },
   methods: {
-    selectTemp() {
-      this.gridTotal.map((item) => {
-        item.gridArea = ''
-      })
-    },
-    selectTempMerge() {
-      this.isMerged = false
-      this.gridTotal.map((item) => {
-        item.gridArea = ''
-      })
-    },
+    // selectTemp() {
+    //   this.gridTotal.map((item) => {
+    //     item.gridArea = ''
+    //   })
+    // },
+    // selectTempMerge() {
+    //   this.isMerged = false
+    //   this.gridTotal.map((item) => {
+    //     item.gridArea = ''
+    //   })
+    // },
     mergeHandle(idx) {
       this.isMerged = false
 
@@ -164,9 +190,9 @@ export default {
         var columnstart = idx % this.form2.temp
         var rowstart = Math.ceil(idx / this.form2.temp)
 
-        this.$nextTick(() => {
-          this.gridTotal[idx - 1].gridArea = `${rowstart} / ${columnstart} / span ${this.form2.tempMerge} / span ${this.form2.tempMerge}`
-        })
+        this.gridTotal[idx - 1].gridArea = `${rowstart} / ${columnstart} / span ${this.form2.tempMerge} / span ${this.form2.tempMerge}`
+
+        this.gridShowNums = this.form2.temp * this.form2.temp - this.form2.tempMerge * this.form2.tempMerge + 1
       }
     },
     reset(formname) {
@@ -180,6 +206,11 @@ export default {
           console.log('error submit!!')
           return false
         }
+      })
+    },
+    getAllChannels() {
+      getAllChannels().then(data => {
+        this.allChannels = data.items
       })
     }
   }

@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    title="创建频道"
+    title="创建设备"
     :visible.sync="dialogVisibleAdd"
     width="50%"
     :before-close="handleClose"

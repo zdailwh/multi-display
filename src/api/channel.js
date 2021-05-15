@@ -24,15 +24,10 @@ export function fetchList(query) {
   })
 }
 
-export function getAllChannels(query) {
-  var params = {
-    page: query.page - 1,
-    per_page: query.limit
-  }
+export function getAllChannels() {
   return request({
     url: '/admin/programme/v1/channels',
-    method: 'get',
-    params
+    method: 'get'
   })
 }
 
