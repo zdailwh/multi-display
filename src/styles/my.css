@@ -102,7 +102,8 @@ tr.bg-red .el-button--text, tr.bg-blue .el-button--text {
 .gridItem {
   font-size: 20px;
   text-align: center;
-  border: 1px solid #e5e4e9;
+  /*border: 1px solid #e5e4e9;*/
+  box-shadow: 0 0 0 1px #fff inset;
   background-color: #f8d29d;
   cursor: pointer;
 }

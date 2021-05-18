@@ -1,6 +1,11 @@
 <template>
   <div class="formWrap">
     <el-form ref="formdata" :model="formdata" :rules="ruleValidate" label-width="120px">
+      <el-form-item label="画框">
+        <div id="gridWrapPassSet" :style="tempClass">
+          <div v-for="(item,k) in gridForPassSet.gridTotal" :key="k" class="gridItem" :class="{ outline: item.serial === currGrid.serial }" :style="{ gridArea: item.gridArea, display: item.serial > gridForPassSet.gridShowNums ? 'none': 'block' }" @click="checkGrid(item)">{{ item.serial }}</div>
+        </div>
+      </el-form-item>
       <el-form-item label="频道" prop="channel">
         <el-select v-model="formdata.channel" placeholder="请选择频道" style="width: 100%;">
           <el-option v-for="(item, k) in allchannels" :key="k" :value="k" :label="item.name" />
@@ -75,10 +80,18 @@ export default {
       default: function() {
         return []
       }
+    },
+    gridForPassSet: {
+      type: Object,
+      default: function() {
+        return {}
+      }
     }
   },
   data() {
     return {
+      tempClass: {},
+      currGrid: {},
       formdata: {
         channel: '',
         decoder: 'cpu',
@@ -129,11 +142,28 @@ export default {
       this.formdata.channel_id = this.allchannels[val].id
       this.formdata.channel_name = this.allchannels[val].name
       this.formdata.channel_url = this.allchannels[val].epgurl
+    },
+    gridForPassSet() {
+      var gridWrap = document.querySelector('#gridWrapPassSet')
+      if (gridWrap) {
+        // 修改网格容器样式
+        var gridW = 480
+        var gridH = 480 * 9 / 16
+        var gridItemW = gridW / this.gridForPassSet.temp
+        var gridItemH = gridH / this.gridForPassSet.temp
+        this.tempClass = {
+          'grid-template-columns': `repeat(${this.gridForPassSet.temp}, ${gridItemW}px)`,
+          'grid-template-rows': `repeat(${this.gridForPassSet.temp}, ${gridItemH}px)`
+        }
+      }
     }
   },
   mounted() {
   },
   methods: {
+    checkGrid(item) {
+      this.currGrid = item
+    },
     commit(formname) {
       this.$refs[formname].validate((valid) => {
         if (valid) {
@@ -154,3 +184,16 @@ export default {
   }
 }
 </script>
+<style>
+#gridWrapPassSet {
+  width: 480px;
+  height: calc(480px * 9 / 16);
+  background-color: #eee;
+  display: grid;
+  /*grid-row-gap: 5px;
+  grid-column-gap: 5px;*/
+}
+.outline {
+  box-shadow: 0 0 0 2px #f00 inset;
+}
+</style>
