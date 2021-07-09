@@ -107,3 +107,29 @@ tr.bg-red .el-button--text, tr.bg-blue .el-button--text {
   background-color: #f8d29d;
   cursor: pointer;
 }
+#gridWrap .el-checkbox {
+  display: block;
+}
+#gridWrap .el-checkbox-button {
+  width: 100%;
+  height: 100%;
+}
+#gridWrap .el-checkbox-button .el-checkbox-button__inner {
+  border-radius: 0;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  border: none;
+}
+#gridWrap .el-checkbox-button.is-checked:first-child .el-checkbox-button__inner {
+  background-color: #1890ff;
+}
+.my-form-item {
+  margin-bottom: 5px !important;
+}
+.el-input-group__append {
+  padding: 0 5px !important;
+}
+.el-input__inner {
+  padding: 0 10px;
+}

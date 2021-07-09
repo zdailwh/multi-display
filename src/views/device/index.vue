@@ -30,7 +30,7 @@
       <el-form-item>
         <el-button @click="resetForm('filterForm')">重置</el-button>
       </el-form-item>
-      <el-button class="filter-item" type="primary" icon="el-icon-plus" @click="dialogVisibleAdd = true">
+      <el-button v-if="!isVisitor" class="filter-item" type="primary" icon="el-icon-plus" @click="dialogVisibleAdd = true">
         创建设备
       </el-button>
     </el-form>
@@ -48,17 +48,47 @@
       </el-table-column>
       <el-table-column label="设备类型" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.type === 1 ? '多画面监看': '录制服务器' }}</span>
+          <span>{{ row.devicetype === 0 ? '多画面监看': '录制服务器' }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" align="center">
+      <el-table-column label="设备IP" align="center" width="120">
         <template slot-scope="{row}">
-          <span>{{ row.status }}</span>
+          <span>{{ row.ip }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center">
+      <el-table-column label="输出网卡IP" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.devips }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="媒资目录" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.mediapath }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="心跳" align="center" width="100">
+        <template slot-scope="{row}">
+          <span>{{ row.heartbeat }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="总空间" align="center" width="120">
+        <template slot-scope="{row}">
+          <span>{{ row.spacetotal }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="可用空间" align="center" width="120">
+        <template slot-scope="{row}">
+          <span>{{ row.spaceavail }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="状态" align="center" width="120">
+        <template slot-scope="{row}">
+          <span>{{ row.statusstr }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column v-if="!isVisitor" label="操作" align="center">
         <template slot-scope="{row, $index}">
-          <!-- <el-button type="text" size="medium" @click="editHandle(row, $index)">编辑</el-button> -->
+          <el-button type="text" size="medium" @click="editHandle(row, $index)">编辑</el-button>
           <el-button type="text" size="medium" @click="delHandler(row.id, $index)">删除</el-button>
         </template>
       </el-table-column>
@@ -72,6 +102,7 @@
 </template>
 
 <script>
+import Cookies from 'js-cookie'
 import { fetchList, deleteDevice } from '@/api/device'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -83,6 +114,7 @@ export default {
   directives: { waves },
   data() {
     return {
+      isVisitor: (Cookies.get('MultiDisplay-isVisitor') && JSON.parse(Cookies.get('MultiDisplay-isVisitor'))) || false,
       list: null,
       total: 0,
       listLoading: true,

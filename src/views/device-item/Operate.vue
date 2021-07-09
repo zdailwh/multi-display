@@ -4,15 +4,13 @@
       <el-form-item label="声音监听" prop="voice">
         <el-select v-model="formdata.voice" placeholder="请选择要进行声音监听的频道" style="width: 100%;">
           <el-option value="" label="静音" />
-          <el-option value="频道1" label="频道1" />
-          <el-option value="频道2" label="频道2" />
+          <el-option v-for="i in framecnt" :key="i" :value="i" :label="i" />
         </el-select>
       </el-form-item>
       <el-form-item label="全屏监看" prop="screen">
         <el-select v-model="formdata.screen" placeholder="请选择要进行全屏监看的频道" style="width: 100%;">
           <el-option value="" label="多画面" />
-          <el-option value="频道1" label="频道1" />
-          <el-option value="频道2" label="频道2" />
+          <el-option v-for="i in framecnt" :key="i" :value="i" :label="i" />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -23,7 +21,18 @@
   </div>
 </template>
 <script>
+import { screenDevice, unmuteDevice } from '@/api/device'
 export default {
+  props: {
+    framecnt: {
+      type: Number,
+      default: 0
+    },
+    deviceid: {
+      type: Number,
+      default: 0
+    }
+  },
   data() {
     return {
       formdata: {
@@ -52,7 +61,11 @@ export default {
     commit(formname) {
       this.$refs[formname].validate((valid) => {
         if (valid) {
-          console.log('验证通过')
+          if (this.formdata.voice) {
+            this.unmuteDevice()
+          } else if (this.formdata.screen) {
+            this.screenDevice()
+          }
         } else {
           console.log('error submit!!')
           return false
@@ -61,6 +74,22 @@ export default {
     },
     reset(formname) {
       this.$refs[formname].resetFields()
+    },
+    unmuteDevice() {
+      unmuteDevice({ id: this.deviceid, frameno: this.formdata.voice }).then(response => {
+        this.$message({
+          message: '设置静音执行成功！',
+          type: 'success'
+        })
+      })
+    },
+    screenDevice() {
+      screenDevice({ id: this.deviceid, frameno: this.formdata.screen }).then(response => {
+        this.$message({
+          message: '设置全屏执行成功！',
+          type: 'success'
+        })
+      })
     }
   }
 }

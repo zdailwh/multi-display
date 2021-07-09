@@ -1,30 +1,30 @@
 <template>
-  <div class="app-container">
-    <el-tabs type="border-card">
-      <el-tab-pane label="基础配置">
+  <div v-if="id" class="app-container">
+    <el-tabs v-model="currTab" type="border-card">
+      <el-tab-pane label="操控" name="operate">
+        <Operate :deviceid="id" :framecnt="currDevice.framecnt" />
+      </el-tab-pane>
+      <el-tab-pane label="基础配置" name="form1">
         <div class="formWrap">
           <el-form ref="form1" :model="form1" :rules="ruleValidateForm1" label-width="120px">
-            <el-form-item label="设备IP" prop="deviceip">
-              <el-input v-model="form1.deviceip" placeholder="请输入设备IP" />
+            <el-form-item label="banner文字" prop="bannertitle">
+              <el-input v-model="form1.bannertitle" placeholder="请输入banner文字" />
             </el-form-item>
-            <el-form-item label="banner文字" prop="banner">
-              <el-input v-model="form1.banner" placeholder="请输入banner文字" />
-            </el-form-item>
-            <el-form-item label="banner高度" prop="bannerh">
-              <el-input v-model="form1.bannerh" readonly placeholder="请输入banner高度" />
+            <el-form-item label="banner高度" prop="bannerheight">
+              <el-input v-model="form1.bannerheight" readonly placeholder="请输入banner高度" />
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="commit('form1')">确 定</el-button>
+              <el-button type="primary" @click="commit('form1')">下 一 步</el-button>
               <el-button @click="reset('form1')">取 消</el-button>
             </el-form-item>
           </el-form>
         </div>
       </el-tab-pane>
-      <el-tab-pane label="画框配置">
+      <el-tab-pane label="画框配置" name="form2">
         <div class="formWrap">
           <el-form ref="form2" :model="form2" :rules="ruleValidateForm2" label-width="120px">
-            <el-form-item label="画框模板" prop="temp">
-              <el-select v-model="form2.temp" placeholder="请选择画框模板" style="width: 100%;">
+            <el-form-item label="画框模式" prop="framegrid">
+              <el-select v-model="form2.framegrid" placeholder="请选择画框模式" style="width: 100%;" @change="framegridChange">
                 <el-option :value="2" label="2 x 2" />
                 <el-option :value="3" label="3 x 3" />
                 <el-option :value="4" label="4 x 4" />
@@ -32,36 +32,27 @@
                 <el-option :value="6" label="6 x 6" />
               </el-select>
             </el-form-item>
-            <el-form-item label="合并模板" prop="tempMerge">
-              <el-select v-model="form2.tempMerge" placeholder="请选择合并模板" style="width: 100%;">
-                <el-option value="" label="不合并" />
-                <el-option :disabled="form2.temp <= 2" :value="2" label="2 x 2" />
-                <el-option :disabled="form2.temp <= 3" :value="3" label="3 x 3" />
-                <el-option :disabled="form2.temp <= 4" :value="4" label="4 x 4" />
-                <el-option :disabled="form2.temp <= 5" :value="5" label="5 x 5" />
-                <!-- <el-option :disabled="form2.temp <= 6" :value="6" label="6 x 6" /> -->
-              </el-select>
-            </el-form-item>
             <el-form-item label="画框绘制">
-              <div id="gridWrap" :style="tempClass">
-                <div v-for="(item,k) in gridTotal" :key="k" class="gridItem" :style="{ gridArea: item.gridArea, display: item.serial > gridShowNums ? 'none': 'block' }" @click="mergeHandle(item.serial)">{{ item.serial }}</div>
-                <!-- //x:{{ item.display_x }}//y:{{ item.display_y }}//w:{{ item.display_w }}//h:{{ item.display_h }} -->
-              </div>
+              <el-checkbox-group v-model="checkList">
+                <div id="gridWrap" :style="tempClass">
+                  <div v-for="(item,k) in gridTotal" :key="k" :ref="'grid_' + item.serial" class="gridItem" :style="{ gridArea: item.gridArea }"><el-checkbox-button :label="item">{{ k + 1 }}</el-checkbox-button></div>
+                </div>
+              </el-checkbox-group>
+              <p>
+                <el-button plain @click="toMerge">合并</el-button>
+              </p>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="commitTemp('form2')">确 定</el-button>
+              <el-button type="primary" @click="commitTemp('form2')">下 一 步</el-button>
               <el-button @click="reset('form2')">取 消</el-button>
             </el-form-item>
           </el-form>
         </div>
       </el-tab-pane>
-      <el-tab-pane label="通道配置">
-        <PassSet :allchannels="allChannels" :grid-for-pass-set="gridForPassSet" />
+      <el-tab-pane label="通道配置" name="passset">
+        <PassSet ref="passset" :allchannels="allChannels" :grid-for-pass-set="gridForPassSet" @submitAll="submitAll" />
       </el-tab-pane>
-      <el-tab-pane label="操控">
-        <Operate />
-      </el-tab-pane>
-      <el-tab-pane label="报警信息">
+      <el-tab-pane label="报警信息" name="warn">
         <Warn />
       </el-tab-pane>
     </el-tabs>
@@ -73,39 +64,36 @@ import PassSet from './PassSet'
 import Operate from './Operate'
 import Warn from './Warn'
 import { getAllChannels } from '@/api/channel'
+import { getDevice, updateDevice } from '@/api/device'
 export default {
   components: { PassSet, Operate, Warn },
   data() {
     return {
+      currTab: 'operate',
       allChannels: [],
       id: null,
+      currDevice: {},
       form1: {
-        deviceip: '',
-        banner: '',
-        bannerh: '自适应'
+        bannertitle: '',
+        bannerheight: 0
       },
       ruleValidateForm1: {
-        deviceip: [
-          { required: true, message: '设备IP不能为空', trigger: 'blur' }
-        ],
-        banner: [
+        bannertitle: [
           { required: true, message: 'banner名称不能为空', trigger: 'blur' }
         ],
-        bannerh: [
+        bannerheight: [
           { required: true, message: 'banner高度不能为空', trigger: 'blur' }
         ]
       },
       form2: {
-        temp: null,
-        tempMerge: null
+        framegrid: null
       },
+      checkList: [],
       gridTotal: [],
-      gridShowNums: 0,
-      isMerged: false,
       tempClass: {},
       ruleValidateForm2: {
-        temp: [
-          { required: true, message: '画框模板不能为空', trigger: 'change' }
+        framegrid: [
+          { required: true, message: '画框模式不能为空', trigger: 'change' }
         ]
       },
       gridOffsetWidth: 0,
@@ -116,119 +104,311 @@ export default {
     }
   },
   watch: {
-    'form2.temp': function(val) {
-      // 计算每个框的宽高像素
-      this.channelW = Math.round(1920 / val)
-      this.channelH = Math.round(this.channelW / 1.05 * 9 / 16)
-      // var bannH = 1080 - this.channelH * val
+    // 'form2.framegrid': function(val) {
+    //   this.checkList = []
+    //   // 计算每个框的宽高像素
+    //   this.channelW = Math.round(1920 / val)
+    //   this.channelH = Math.round(this.channelW / 1.05 * 9 / 16)
+    //   // var bannH = 1080 - this.channelH * val
 
-      this.form2.tempMerge = ''
-      this.isMerged = false
+    //   var gridWrap = document.querySelector('#gridWrap')
 
-      this.gridShowNums = this.form2.temp ** 2
-      var gridWrap = document.querySelector('#gridWrap')
-      if (gridWrap) {
-        // 修改网格容器样式
-        var gridW = gridWrap.clientWidth
-        var gridH = gridWrap.clientHeight
-        var gridItemW = gridW / val
-        var gridItemH = gridH / val
-        this.tempClass = {
-          'grid-template-columns': `repeat(${val}, ${gridItemW}px)`,
-          'grid-template-rows': `repeat(${val}, ${gridItemH}px)`
-        }
-        // 生成网格元素
-        var gridArr = []
-        var num = 0
-        num = val * val
-        for (var i = 0; i < num; i++) {
-          gridArr.push({
-            serial: i + 1,
-            gridArea: '',
-            display_x: '',
-            display_y: '',
-            display_w: '',
-            display_h: ''
-          })
-        }
-        this.gridTotal = gridArr
-        this.$nextTick(() => {
-          // 保存每个单元格的宽高，因为offsetTop offsetLeft 获取到的值被取整 所以不能直接用上面的gridItemW gridItemH
-          this.gridOffsetWidth = document.querySelectorAll('.gridItem')[1].offsetLeft
-          this.gridOffsetHeight = document.querySelectorAll('.gridItem')[val].offsetTop
-          this.calcInit()
-        })
+    //   gridWrap.innerHTML = ''
+    //   this.gridTotal = []
+
+    //   this.$nextTick(() => {
+    //     if (gridWrap) {
+    //       // 修改网格容器样式
+    //       var gridW = gridWrap.clientWidth
+    //       var gridH = gridWrap.clientHeight
+    //       var gridItemW = gridW / val
+    //       var gridItemH = gridH / val
+    //       this.tempClass = {
+    //         'grid-template-columns': `repeat(${val}, ${gridItemW}px)`,
+    //         'grid-template-rows': `repeat(${val}, ${gridItemH}px)`
+    //       }
+
+    //       // 生成网格元素
+    //       var gridArr = []
+    //       var num = 0
+    //       num = val * val
+    //       for (var i = 0; i < num; i++) {
+    //         gridArr.push({
+    //           serial: i + 1,
+    //           gridArea: '',
+    //           displayx: '',
+    //           displayy: '',
+    //           displayw: '',
+    //           displayh: '',
+    //           display: 'block'
+    //         })
+    //       }
+    //       console.log('hear')
+    //       console.log(gridArr)
+    //       this.gridTotal = gridArr
+    //       this.$nextTick(() => {
+    //         // 保存每个单元格的宽高，因为offsetTop offsetLeft 获取到的值被取整 所以不能直接用上面的gridItemW gridItemH
+    //         this.gridOffsetWidth = this.$refs['grid_2'][0].offsetLeft
+    //         this.gridOffsetHeight = this.$refs['grid_' + (val + 1)][0].offsetTop
+    //         this.calcInit()
+    //       })
+    //     }
+    //   })
+    // },
+    gridTotal(newval) {
+      var filtedGridTotal = newval.filter((item) => {
+        return item.display === 'block'
+      })
+      this.gridForPassSet = {
+        gridTotal: JSON.parse(JSON.stringify(filtedGridTotal)),
+        framegrid: this.form2.framegrid
       }
-    },
-    'form2.tempMerge': function(val) {
-      this.isMerged = false
-      this.gridTotal.map((item) => {
-        item.gridArea = ''
-      })
-      this.gridShowNums = this.form2.temp ** 2
-      this.$nextTick(() => {
-        this.calcInit()
-      })
     }
   },
   created() {
-    this.id = this.$route.params.id
+    this.id = parseInt(this.$route.params.id)
+    if (this.id) {
+      this.getDevice()
+    }
   },
   mounted() {
     this.getAllChannels()
   },
   methods: {
-    calcInit() {
-      this.gridTotal.map((item) => {
-        var offLeft = document.querySelectorAll('.gridItem')[item.serial - 1].offsetLeft
-        var offTop = document.querySelectorAll('.gridItem')[item.serial - 1].offsetTop
-        item.display_x = Math.round(offLeft / this.gridOffsetWidth) * this.channelW
-        item.display_y = Math.round(offTop / this.gridOffsetHeight) * this.channelH
-        item.display_w = this.channelW
-        item.display_h = this.channelH
+    getDevice() {
+      getDevice({ id: this.id }).then(response => {
+        this.currDevice = response
+        this.form1 = {
+          bannertitle: this.currDevice.bannertitle,
+          bannerheight: this.currDevice.bannerheight
+        }
+        this.form2 = {
+          framegrid: this.currDevice.framegrid
+        }
+        this.$nextTick(() => {
+          this.framegridChange(this.currDevice.framegrid)
+        })
+        // var gridArr = []
+        // for (var i = 0; i < this.currDevice.framecnt; i++) {
+        //   gridArr.push({
+        //     serial: this.currDevice.frames[i].serial,
+        //     gridArea: this.currDevice.frames[i].gridArea,
+        //     displayx: this.currDevice.frames[i].displayx,
+        //     displayy: this.currDevice.frames[i].displayy,
+        //     displayw: this.currDevice.frames[i].displayw,
+        //     displayh: this.currDevice.frames[i].displayh,
+        //     display: this.currDevice.frames[i].display
+        //   })
+        // }
+        // this.gridTotal = gridArr
+
+        // this.$refs.passset.frames = []
+        // this.$refs.passset.frames = this.currDevice.frames
       })
     },
-    mergeHandle(idx) {
-      this.isMerged = false
-      this.gridTotal.map((item) => {
-        item.gridArea = ''
-      })
-      this.gridShowNums = this.form2.temp ** 2
+    framegridChange(val) {
+      this.checkList = []
+      // 计算每个框的宽高像素
+      this.channelW = Math.round(1920 / val)
+      this.channelH = Math.round(this.channelW / 1.05 * 9 / 16)
+      // var bannH = 1080 - this.channelH * val
+      var gridWrap = document.querySelector('#gridWrap')
+
       this.$nextTick(() => {
-        this.calcInit()
-      })
+        gridWrap.innerHTML = ''
+        this.gridTotal = []
 
-      if (!this.form2.tempMerge) {
-        this.$message({
-          message: '请先选择合并模板再进行合并！',
-          type: 'warning'
+        this.$nextTick(() => {
+          if (gridWrap) {
+            // 修改网格容器样式
+            var gridW = gridWrap.clientWidth || 480
+            var gridH = gridWrap.clientHeight || (480 * 9 / 16)
+            var gridItemW = gridW / val
+            var gridItemH = gridH / val
+            this.tempClass = {
+              'grid-template-columns': `repeat(${val}, ${gridItemW}px)`,
+              'grid-template-rows': `repeat(${val}, ${gridItemH}px)`
+            }
+
+            // 生成网格元素
+            var gridArr = []
+            var num = 0
+            num = val * val
+            for (var i = 0; i < num; i++) {
+              gridArr.push({
+                serial: i + 1,
+                gridArea: '',
+                displayx: '',
+                displayy: '',
+                displayw: '',
+                displayh: '',
+                display: 'block'
+              })
+            }
+            this.gridTotal = gridArr
+            this.$nextTick(() => {
+              // 保存每个单元格的宽高，因为offsetTop offsetLeft 获取到的值被取整 所以不能直接用上面的gridItemW gridItemH
+              this.gridOffsetWidth = this.$refs['grid_2'][0].offsetLeft
+              this.gridOffsetHeight = this.$refs['grid_' + (val + 1)][0].offsetTop
+              this.calcInit()
+            })
+          }
         })
-      } else {
-        var columnstart = idx % this.form2.temp === 0 ? this.form2.temp : idx % this.form2.temp
-        var rowstart = Math.ceil(idx / this.form2.temp)
-        if ((columnstart + this.form2.tempMerge) > (this.form2.temp + 1) || (rowstart + this.form2.tempMerge) > (this.form2.temp + 1)) {
-          // 当前单元格不能合并
-        } else {
-          // 是否有合并的标识
-          this.isMerged = true
+      })
+    },
+    calcInit() {
+      this.gridTotal.map((item) => {
+        var offLeft = this.$refs['grid_' + item.serial][0].offsetLeft
 
-          this.gridTotal[idx - 1].gridArea = `${rowstart} / ${columnstart} / span ${this.form2.tempMerge} / span ${this.form2.tempMerge}`
+        var offTop = this.$refs['grid_' + item.serial][0].offsetTop
+        item.displayx = Math.round(offLeft / this.gridOffsetWidth) * this.channelW
+        item.displayy = Math.round(offTop / this.gridOffsetHeight) * this.channelH
+        item.displayw = this.channelW
+        item.displayh = this.channelH
+      })
+    },
+    doMerge() {
+      // console.log(this.checkList)
+      var row_num = parseInt(this.checkList.length ** 0.5)
+      this.checkList.sort((a, b) => {
+        return a.serial - b.serial
+      })
+      var serialArr = this.checkList.map((item) => {
+        return item.serial
+      })
+      console.log(serialArr)
+      var leftTopItem = this.checkList[0]
+      var originRowSpan = parseInt(leftTopItem.displayw / this.channelW)
+      var originColumnSpan = parseInt(leftTopItem.displayh / this.channelH)
+      var columnStart = parseInt(leftTopItem.displayx / this.channelW) + 1
+      var rowStart = parseInt(leftTopItem.displayy / this.channelH) + 1
+      this.gridTotal[leftTopItem.serial - 1].gridArea = `${rowStart} / ${columnStart} / span ${originRowSpan * row_num} / span ${originColumnSpan * row_num}`
 
-          this.gridShowNums = this.form2.temp ** 2 - this.form2.tempMerge ** 2 + 1
-
-          this.$nextTick(() => {
-            this.gridTotal.map((item) => {
-              var offLeft = document.querySelectorAll('.gridItem')[item.serial - 1].offsetLeft
-              var offTop = document.querySelectorAll('.gridItem')[item.serial - 1].offsetTop
-              item.display_x = Math.round(offLeft / this.gridOffsetWidth) * this.channelW
-              item.display_y = Math.round(offTop / this.gridOffsetHeight) * this.channelH
-              if (item.serial === idx) {
-                item.display_w = this.form2.tempMerge * this.channelW
-                item.display_h = this.form2.tempMerge * this.channelH
+      this.$nextTick(() => {
+        this.gridTotal.map((item) => {
+          var offLeft = this.$refs['grid_' + item.serial][0].offsetLeft
+          var offTop = this.$refs['grid_' + item.serial][0].offsetTop
+          item.displayx = Math.round(offLeft / this.gridOffsetWidth) * this.channelW
+          item.displayy = Math.round(offTop / this.gridOffsetHeight) * this.channelH
+          if (item.serial === leftTopItem.serial) {
+            item.displayw = originRowSpan * row_num * this.channelW
+            item.displayh = originColumnSpan * row_num * this.channelH
+          } else if (serialArr.indexOf(item.serial) !== -1) {
+            this.$refs['grid_' + item.serial][0].remove()
+            item.display = 'none'
+          }
+        })
+      })
+      this.checkList = []
+    },
+    toMerge() {
+      console.log(this.checkList)
+      if (this.checkList.length > 3 && this.checkList.length < this.form2.framegrid ** 2) {
+        if (parseInt(this.checkList.length ** 0.5) === parseFloat(this.checkList.length ** 0.5)) {
+          // 检查被选画框的宽高是否都是相同的
+          var oneW = this.checkList[0].displayw
+          var oneH = this.checkList[0].displayh
+          var filteredW = this.checkList.every((item) => {
+            return item.displayw === oneW
+          })
+          var filteredH = this.checkList.every((item) => {
+            return item.displayh === oneH
+          })
+          if (filteredW && filteredH) {
+            // 检查被选画框的坐标是否符合规律 按照x坐标分组
+            var row_num = parseInt(this.checkList.length ** 0.5)
+            var myO = {}
+            this.checkList.map((item) => {
+              if (myO[item.displayx]) {
+                myO[item.displayx].push(item)
+              } else {
+                myO[item.displayx] = [item]
               }
             })
+
+            // 判断x分组后 每组的长度是否相同
+            var lenArr = []
+            for (var item in myO) {
+              lenArr.push(myO[item].length)
+            }
+            var checkLenRes = lenArr.every(item => lenArr[0] === item)
+            if (!checkLenRes) {
+              this.$message({
+                message: '勾选的底框不能合并！',
+                type: 'warning'
+              })
+              return
+            }
+
+            var numArr_x = Object.keys(myO)
+            var diffNumArr_x = []
+            for (var i = 0; i < numArr_x.length - 1; i++) {
+              diffNumArr_x.push(parseInt(numArr_x[i + 1]) - parseInt(numArr_x[i]))
+            }
+            var checkXres = diffNumArr_x.every(item => diffNumArr_x[0] === item && diffNumArr_x[0] === oneW)
+            console.log('x坐标是否连续的：' + checkXres)
+            console.log('x分组长度：' + numArr_x.length)
+            // x坐标是连续的 而且按照x坐标分组 分组个数等于合并模式个数
+            if (checkXres && numArr_x.length === row_num) {
+              // 按照y坐标从小到大排序
+              var checkYresArr = []
+              for (var key in myO) {
+                myO[key] = myO[key].sort((a, b) => {
+                  return a.displayy - b.displayy
+                })
+
+                var diffNumArr_y = []
+                for (var j = 0; j < myO[key].length - 1; j++) {
+                  diffNumArr_y.push(myO[key][j + 1].displayy - myO[key][j].displayy)
+                }
+                var checkYres = diffNumArr_y.every(item => diffNumArr_y[0] === item && diffNumArr_y[0] === oneH)
+                console.log(key + '/' + checkYres)
+                checkYresArr.push(checkYres)
+              }
+              // 判断按照x分组后 每组按y排序后 每组的y坐标组成的字符串是否相同
+              var strYO = {}
+              for (var kk in myO) {
+                strYO[kk] = myO[kk].map((item) => {
+                  return item.displayy
+                })
+              }
+              var strYArr = []
+              for (var k in strYO) {
+                strYArr.push(strYO[k].join())
+              }
+
+              if (checkYresArr.every(item => item === true) && strYArr.every(item => strYArr[0] === item)) {
+                console.log('可以合并')
+                this.doMerge()
+              } else {
+                this.$message({
+                  message: '勾选的底框不能合并！',
+                  type: 'warning'
+                })
+              }
+            } else {
+              this.$message({
+                message: '勾选的底框不能合并！',
+                type: 'warning'
+              })
+            }
+          } else {
+            this.$message({
+              message: '勾选的底框宽高不统一！',
+              type: 'warning'
+            })
+          }
+        } else {
+          this.$message({
+            message: '勾选的数量不是平方数，无法组合！',
+            type: 'warning'
           })
         }
+      } else {
+        this.$message({
+          message: '勾选的底框数量不满足要求！',
+          type: 'warning'
+        })
       }
     },
     reset(formname) {
@@ -237,7 +417,7 @@ export default {
     commit(formname) {
       this.$refs[formname].validate((valid) => {
         if (valid) {
-          console.log('验证通过')
+          this.currTab = 'form2'
         } else {
           console.log('error submit!!')
           return false
@@ -247,11 +427,14 @@ export default {
     commitTemp(formname) {
       this.$refs[formname].validate((valid) => {
         if (valid) {
-          this.gridForPassSet = {
-            gridTotal: JSON.parse(JSON.stringify(this.gridTotal)),
-            gridShowNums: this.gridShowNums,
-            temp: this.form2.temp
-          }
+          // var filtedGridTotal = this.gridTotal.filter((item) => {
+          //   return item.display === 'block'
+          // })
+          // this.gridForPassSet = {
+          //   gridTotal: JSON.parse(JSON.stringify(filtedGridTotal)),
+          //   framegrid: this.form2.framegrid
+          // }
+          this.currTab = 'passset'
         } else {
           console.log('error submit!!')
           return false
@@ -261,6 +444,23 @@ export default {
     getAllChannels() {
       getAllChannels().then(data => {
         this.allChannels = data.items
+      })
+    },
+    submitAll() {
+      var frames = this.$refs.passset.frames
+      var formconcat = { ...this.form1, ...this.form2 }
+      formconcat.framecnt = frames.length
+      formconcat.frames = frames
+      formconcat.id = this.id
+      console.log(formconcat)
+      this.updateDevice(formconcat)
+    },
+    updateDevice(editform) {
+      updateDevice(editform).then(response => {
+        this.$message({
+          message: '编辑成功！',
+          type: 'success'
+        })
       })
     }
   }

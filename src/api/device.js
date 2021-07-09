@@ -15,15 +15,22 @@ export function fetchList(query) {
     params.name = query.name
   }
   return request({
-    url: '/admin/programme/v1/devices',
+    url: '/admin/monitor/v1/devices',
     method: 'get',
     params
   })
 }
 
+export function getDevice(query) {
+  return request({
+    url: '/admin/monitor/v1/devices/' + query.id,
+    method: 'get'
+  })
+}
+
 export function createDevice(data) {
   return request({
-    url: '/admin/programme/v1/devices',
+    url: '/admin/monitor/v1/devices',
     method: 'post',
     data: data
   })
@@ -31,7 +38,7 @@ export function createDevice(data) {
 
 export function updateDevice(data) {
   return request({
-    url: '/admin/programme/v1/devices/' + data.id,
+    url: '/admin/monitor/v1/devices/' + data.id,
     method: 'put',
     data: data
   })
@@ -39,7 +46,28 @@ export function updateDevice(data) {
 
 export function deleteDevice(query) {
   return request({
-    url: '/admin/programme/v1/devices/' + query.id,
+    url: '/admin/monitor/v1/devices/' + query.id,
     method: 'delete'
+  })
+}
+// 设置全屏
+export function screenDevice(data) {
+  return request({
+    url: '/admin/monitor/v1/devices/' + data.id + '/screen',
+    method: 'put',
+    data: {
+      frameno: data.frameno
+    }
+  })
+}
+
+// 设置静音
+export function unmuteDevice(data) {
+  return request({
+    url: '/admin/monitor/v1/devices/' + data.id + '/unmute',
+    method: 'put',
+    data: {
+      frameno: data.frameno
+    }
   })
 }

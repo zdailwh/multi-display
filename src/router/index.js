@@ -100,20 +100,20 @@ export const constantRoutes = [
       }
     ]
   },
-  {
-    path: '/admin',
-    component: Layout,
-    redirect: '/admin/index',
-    meta: { title: '用户管理', icon: 'el-icon-s-custom' },
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/admin/index'),
-        name: 'AdminList',
-        meta: { title: '用户设置', icon: 'el-icon-s-custom' }
-      }
-    ]
-  },
+  // {
+  //   path: '/admin',
+  //   component: Layout,
+  //   redirect: '/admin/index',
+  //   meta: { title: '用户管理', icon: 'el-icon-s-custom' },
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/admin/index'),
+  //       name: 'AdminList',
+  //       meta: { title: '用户设置', icon: 'el-icon-s-custom' }
+  //     }
+  //   ]
+  // },
   {
     path: '/channel',
     component: Layout,
@@ -125,6 +125,39 @@ export const constantRoutes = [
         component: () => import('@/views/channel/index'),
         name: 'ChannelList',
         meta: { title: '频道设置', icon: 'el-icon-monitor' }
+      }
+    ]
+  },
+  {
+    path: '/setting',
+    component: Layout,
+    redirect: '/setting/admin/edit',
+    name: 'Setting',
+    meta: { title: '基本配置', icon: 'el-icon-set-up' },
+    children: [
+      {
+        path: 'admin/edit',
+        component: () => import('@/views/setting/admin/edit'),
+        name: 'AdminEdit',
+        meta: { title: '编辑个人信息', icon: 'el-icon-user-solid' }
+      },
+      {
+        path: 'admin/updatePwd',
+        component: () => import('@/views/setting/admin/updatePwd'),
+        name: 'AdminUpdatePwd',
+        meta: { title: '修改密码', icon: 'el-icon-edit' }
+      },
+      {
+        path: 'admin/index',
+        component: () => import('@/views/setting/admin/index'),
+        name: 'AdminList',
+        meta: { title: '用户设置', icon: 'peoples' }
+      },
+      {
+        path: 'pwdSet/index',
+        component: () => import('@/views/setting/admin/pwdSet'),
+        name: 'AdminPwdSet',
+        meta: { title: '密码强度设置', icon: 'el-icon-lock' }
       }
     ]
   }

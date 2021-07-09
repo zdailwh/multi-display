@@ -29,7 +29,7 @@ const user = Mock.mock({
 
 module.exports = [
   {
-    url: '/admin/programme/v1/channels',
+    url: '/admin/monitor/v1/channels',
     type: 'get',
     response: config => {
       const { importance, type, title, page = 0, per_page = 20, sort } = config.query
@@ -54,35 +54,35 @@ module.exports = [
     }
   },
   {
-    url: '/admin/programme/v1/channels/[0-9]',
+    url: '/admin/monitor/v1/channels/[0-9]',
     type: 'put',
     response: config => {
       return user
     }
   },
   {
-    url: '/admin/programme/v1/channels',
+    url: '/admin/monitor/v1/channels',
     type: 'post',
     response: config => {
       return user
     }
   },
   {
-    url: '/admin/programme/v1/channels/[0-9]',
+    url: '/admin/monitor/v1/channels/[0-9]',
     type: 'delete',
     response: config => {
       return user
     }
   },
   {
-    url: '/admin/programme/v1/channels/[0-9]/actived',
+    url: '/admin/monitor/v1/channels/[0-9]/actived',
     type: 'put',
     response: config => {
       return user
     }
   },
   {
-    url: '/admin/programme/v1/channels/[0-9]/inactived',
+    url: '/admin/monitor/v1/channels/[0-9]/inactived',
     type: 'put',
     response: config => {
       return user

@@ -1,5 +1,5 @@
 module.exports = {
-  title: '多画面管理平台',
+  title: 'TS码流视音频监播系统',
 
   /**
    * @type {boolean} true | false

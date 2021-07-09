@@ -34,7 +34,13 @@ router.beforeEach(async(to, from, next) => {
         }
       } else {
         try {
-          const roles = ['admin']
+          var currUser = JSON.parse(hasToken)
+          var roles = []
+          if (parseInt(currUser.isadmin) > 3) {
+            roles = ['admin']
+          } else {
+            roles = ['editor']
+          }
           const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
           await store.dispatch('user/setRole', roles)
           router.addRoutes(accessRoutes)
