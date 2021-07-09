@@ -2,7 +2,7 @@
   <div v-if="id" class="app-container">
     <el-tabs v-model="currTab" type="border-card">
       <el-tab-pane label="操控" name="operate">
-        <Operate :deviceid="id" :framecnt="currDevice.framecnt" />
+        <Operate :deviceid="id" :device="currDevice" />
       </el-tab-pane>
       <el-tab-pane label="基础配置" name="form1">
         <div class="formWrap">
@@ -50,10 +50,10 @@
         </div>
       </el-tab-pane>
       <el-tab-pane label="通道配置" name="passset">
-        <PassSet ref="passset" :allchannels="allChannels" :grid-for-pass-set="gridForPassSet" @submitAll="submitAll" />
+        <PassSet ref="passset" :allchannels="allChannels" :grid-for-pass-set="gridForPassSet" :editframes="currDevice.frames" @submitAll="submitAll" />
       </el-tab-pane>
       <el-tab-pane label="报警信息" name="warn">
-        <Warn />
+        <Warn ref="warn" :deviceid="id" :allchannels="allChannels" />
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -64,7 +64,7 @@ import PassSet from './PassSet'
 import Operate from './Operate'
 import Warn from './Warn'
 import { getAllChannels } from '@/api/channel'
-import { getDevice, updateDevice } from '@/api/device'
+import { getDevice, postDevice } from '@/api/device'
 export default {
   components: { PassSet, Operate, Warn },
   data() {
@@ -100,61 +100,11 @@ export default {
       gridOffsetHeight: 0,
       channelW: 0,
       channelH: 0,
+      bannH: 0,
       gridForPassSet: {}
     }
   },
   watch: {
-    // 'form2.framegrid': function(val) {
-    //   this.checkList = []
-    //   // 计算每个框的宽高像素
-    //   this.channelW = Math.round(1920 / val)
-    //   this.channelH = Math.round(this.channelW / 1.05 * 9 / 16)
-    //   // var bannH = 1080 - this.channelH * val
-
-    //   var gridWrap = document.querySelector('#gridWrap')
-
-    //   gridWrap.innerHTML = ''
-    //   this.gridTotal = []
-
-    //   this.$nextTick(() => {
-    //     if (gridWrap) {
-    //       // 修改网格容器样式
-    //       var gridW = gridWrap.clientWidth
-    //       var gridH = gridWrap.clientHeight
-    //       var gridItemW = gridW / val
-    //       var gridItemH = gridH / val
-    //       this.tempClass = {
-    //         'grid-template-columns': `repeat(${val}, ${gridItemW}px)`,
-    //         'grid-template-rows': `repeat(${val}, ${gridItemH}px)`
-    //       }
-
-    //       // 生成网格元素
-    //       var gridArr = []
-    //       var num = 0
-    //       num = val * val
-    //       for (var i = 0; i < num; i++) {
-    //         gridArr.push({
-    //           serial: i + 1,
-    //           gridArea: '',
-    //           displayx: '',
-    //           displayy: '',
-    //           displayw: '',
-    //           displayh: '',
-    //           display: 'block'
-    //         })
-    //       }
-    //       console.log('hear')
-    //       console.log(gridArr)
-    //       this.gridTotal = gridArr
-    //       this.$nextTick(() => {
-    //         // 保存每个单元格的宽高，因为offsetTop offsetLeft 获取到的值被取整 所以不能直接用上面的gridItemW gridItemH
-    //         this.gridOffsetWidth = this.$refs['grid_2'][0].offsetLeft
-    //         this.gridOffsetHeight = this.$refs['grid_' + (val + 1)][0].offsetTop
-    //         this.calcInit()
-    //       })
-    //     }
-    //   })
-    // },
     gridTotal(newval) {
       var filtedGridTotal = newval.filter((item) => {
         return item.display === 'block'
@@ -173,6 +123,9 @@ export default {
   },
   mounted() {
     this.getAllChannels()
+    if (this.id) {
+      this.$refs.warn.handleFilter()
+    }
   },
   methods: {
     getDevice() {
@@ -201,9 +154,6 @@ export default {
         //   })
         // }
         // this.gridTotal = gridArr
-
-        // this.$refs.passset.frames = []
-        // this.$refs.passset.frames = this.currDevice.frames
       })
     },
     framegridChange(val) {
@@ -211,7 +161,7 @@ export default {
       // 计算每个框的宽高像素
       this.channelW = Math.round(1920 / val)
       this.channelH = Math.round(this.channelW / 1.05 * 9 / 16)
-      // var bannH = 1080 - this.channelH * val
+      this.bannH = 1080 - this.channelH * val
       var gridWrap = document.querySelector('#gridWrap')
 
       this.$nextTick(() => {
@@ -262,7 +212,7 @@ export default {
 
         var offTop = this.$refs['grid_' + item.serial][0].offsetTop
         item.displayx = Math.round(offLeft / this.gridOffsetWidth) * this.channelW
-        item.displayy = Math.round(offTop / this.gridOffsetHeight) * this.channelH
+        item.displayy = Math.round(offTop / this.gridOffsetHeight) * this.channelH + this.bannH
         item.displayw = this.channelW
         item.displayh = this.channelH
       })
@@ -289,7 +239,7 @@ export default {
           var offLeft = this.$refs['grid_' + item.serial][0].offsetLeft
           var offTop = this.$refs['grid_' + item.serial][0].offsetTop
           item.displayx = Math.round(offLeft / this.gridOffsetWidth) * this.channelW
-          item.displayy = Math.round(offTop / this.gridOffsetHeight) * this.channelH
+          item.displayy = Math.round(offTop / this.gridOffsetHeight) * this.channelH + this.bannH
           if (item.serial === leftTopItem.serial) {
             item.displayw = originRowSpan * row_num * this.channelW
             item.displayh = originColumnSpan * row_num * this.channelH
@@ -427,13 +377,13 @@ export default {
     commitTemp(formname) {
       this.$refs[formname].validate((valid) => {
         if (valid) {
-          // var filtedGridTotal = this.gridTotal.filter((item) => {
-          //   return item.display === 'block'
-          // })
-          // this.gridForPassSet = {
-          //   gridTotal: JSON.parse(JSON.stringify(filtedGridTotal)),
-          //   framegrid: this.form2.framegrid
-          // }
+          var filtedGridTotal = this.gridTotal.filter((item) => {
+            return item.display === 'block'
+          })
+          this.gridForPassSet = {
+            gridTotal: JSON.parse(JSON.stringify(filtedGridTotal)),
+            framegrid: this.form2.framegrid
+          }
           this.currTab = 'passset'
         } else {
           console.log('error submit!!')
@@ -456,7 +406,7 @@ export default {
       this.updateDevice(formconcat)
     },
     updateDevice(editform) {
-      updateDevice(editform).then(response => {
+      postDevice(editform).then(response => {
         this.$message({
           message: '编辑成功！',
           type: 'success'

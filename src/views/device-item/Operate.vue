@@ -2,15 +2,15 @@
   <div class="formWrap">
     <el-form ref="formdata" :model="formdata" :rules="ruleValidate" label-width="120px">
       <el-form-item label="声音监听" prop="voice">
-        <el-select v-model="formdata.voice" placeholder="请选择要进行声音监听的频道" style="width: 100%;">
+        <el-select v-model="formdata.voice" value-key="frameno" placeholder="请选择要进行声音监听的频道" style="width: 100%;">
           <el-option value="" label="静音" />
-          <el-option v-for="i in framecnt" :key="i" :value="i" :label="i" />
+          <el-option v-for="(item, i) in device.frames" :key="i" :value="item.frameno" :label="item.frameno + ' -- ' + item.channel.name" />
         </el-select>
       </el-form-item>
       <el-form-item label="全屏监看" prop="screen">
-        <el-select v-model="formdata.screen" placeholder="请选择要进行全屏监看的频道" style="width: 100%;">
+        <el-select v-model="formdata.screen" value-key="frameno" placeholder="请选择要进行全屏监看的频道" style="width: 100%;">
           <el-option value="" label="多画面" />
-          <el-option v-for="i in framecnt" :key="i" :value="i" :label="i" />
+          <el-option v-for="(item, i) in device.frames" :key="i" :value="item.frameno" :label="item.frameno + ' -- ' + item.channel.name" />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -24,9 +24,11 @@
 import { screenDevice, unmuteDevice } from '@/api/device'
 export default {
   props: {
-    framecnt: {
-      type: Number,
-      default: 0
+    device: {
+      type: Object,
+      default: function() {
+        return {}
+      }
     },
     deviceid: {
       type: Number,

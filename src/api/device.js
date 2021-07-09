@@ -44,6 +44,14 @@ export function updateDevice(data) {
   })
 }
 
+export function postDevice(data) {
+  return request({
+    url: '/admin/monitor/v1/devices/' + data.id,
+    method: 'post',
+    data: data
+  })
+}
+
 export function deleteDevice(query) {
   return request({
     url: '/admin/monitor/v1/devices/' + query.id,
@@ -69,5 +77,28 @@ export function unmuteDevice(data) {
     data: {
       frameno: data.frameno
     }
+  })
+}
+
+// 获取报警信息
+export function getAlarms(query) {
+  var params = {
+    page: query.page - 1,
+    per_page: query.limit
+  }
+
+  if (query.device_id !== '') {
+    params.device_id = query.device_id
+  }
+  if (query.channel_id !== '') {
+    params.channel_id = query.channel_id
+  }
+  if (query.type !== '') {
+    params.type = query.type
+  }
+  return request({
+    url: '/admin/monitor/v1/alarms',
+    method: 'get',
+    params
   })
 }

@@ -172,6 +172,12 @@ export default {
       default: function() {
         return {}
       }
+    },
+    editframes: {
+      type: Array,
+      default: function() {
+        return []
+      }
     }
   },
   data() {
@@ -231,6 +237,10 @@ export default {
     }
   },
   watch: {
+    // editframes(val) {
+    //   console.log('变了')
+    //   this.frames = val
+    // },
     gridForPassSet(val) {
       var gridWrap = document.querySelector('#gridWrapPassSet')
       if (gridWrap) {
@@ -244,6 +254,10 @@ export default {
           'grid-template-rows': `repeat(${this.gridForPassSet.framegrid}, ${gridItemH}px)`
         }
       }
+      this.frames = []
+      // if (this.editframes.length) {
+      //   this.frames = this.editframes
+      // } else {
       if (val.gridTotal && val.gridTotal.length) {
         for (var i = 0; i < val.gridTotal.length; i++) {
           var copyForm = JSON.parse(JSON.stringify(this.formdataTemp))
@@ -252,6 +266,7 @@ export default {
           this.frames.push(copyForm)
         }
       }
+      // }
     }
   },
   mounted() {
