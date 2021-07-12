@@ -35,6 +35,7 @@
             <div class="tableTd">
               <el-form-item prop="channel" class="my-form-item">
                 <el-select v-model="frames[k].channel" value-key="id" placeholder="请选择频道" style="width: 100%;" @change="setChannel(k)">
+                  <el-option :value="null" label="空" />
                   <el-option v-for="(it, i) in allchannels" :key="i" :value="it" :label="it.name" />
                 </el-select>
               </el-form-item>
@@ -198,7 +199,7 @@ export default {
       currGrid: {},
       formdataTemp: {
         frameno: '',
-        channel: '',
+        channel: null,
         decoder: 'cpu',
         recordpath: '',
         encoder: 'cpu',
@@ -269,7 +270,7 @@ export default {
           var copyForm = JSON.parse(JSON.stringify(this.formdataTemp))
           copyForm.frameno = i + 1
           if (this.editframes.length && this.editframes[i]) {
-            copyForm.channel = this.editframes[i].channel
+            copyForm.channel = this.editframes[i].channel ? this.editframes[i].channel : null
             copyForm.decoder = this.editframes[i].decoder
             copyForm.recordpath = this.editframes[i].recordpath
             copyForm.encoder = this.editframes[i].encoder
