@@ -135,12 +135,14 @@ export default {
           bannertitle: this.currDevice.bannertitle,
           bannerheight: this.currDevice.bannerheight
         }
-        this.form2 = {
-          framegrid: this.currDevice.framegrid
+        if (this.currDevice.framegrid) {
+          this.form2 = {
+            framegrid: this.currDevice.framegrid
+          }
+          this.$nextTick(() => {
+            this.framegridChange(this.currDevice.framegrid, 'edit')
+          })
         }
-        this.$nextTick(() => {
-          this.framegridChange(this.currDevice.framegrid)
-        })
         // var gridArr = []
         // for (var i = 0; i < this.currDevice.framecnt; i++) {
         //   gridArr.push({
@@ -156,7 +158,7 @@ export default {
         // this.gridTotal = gridArr
       })
     },
-    framegridChange(val) {
+    framegridChange(val, to = '') {
       this.checkList = []
       // 计算每个框的宽高像素
       this.channelW = Math.round(1920 / val)
@@ -182,26 +184,33 @@ export default {
 
             // 生成网格元素
             var gridArr = []
-            var num = 0
-            num = val * val
-            for (var i = 0; i < num; i++) {
-              gridArr.push({
-                serial: i + 1,
-                gridArea: '',
-                displayx: '',
-                displayy: '',
-                displayw: '',
-                displayh: '',
-                display: 'block'
+            if (to === 'edit' && this.currDevice.framecnt) {
+              for (var j = 0; j < this.currDevice.framecnt; j++) {
+                gridArr.push(this.currDevice.frames[j])
+              }
+              this.gridTotal = gridArr
+            } else {
+              var num = 0
+              num = val * val
+              for (var i = 0; i < num; i++) {
+                gridArr.push({
+                  serial: i + 1,
+                  gridArea: '',
+                  displayx: '',
+                  displayy: '',
+                  displayw: '',
+                  displayh: '',
+                  display: 'block'
+                })
+              }
+              this.gridTotal = gridArr
+              this.$nextTick(() => {
+                // 保存每个单元格的宽高，因为offsetTop offsetLeft 获取到的值被取整 所以不能直接用上面的gridItemW gridItemH
+                this.gridOffsetWidth = this.$refs['grid_2'][0].offsetLeft
+                this.gridOffsetHeight = this.$refs['grid_' + (val + 1)][0].offsetTop
+                this.calcInit()
               })
             }
-            this.gridTotal = gridArr
-            this.$nextTick(() => {
-              // 保存每个单元格的宽高，因为offsetTop offsetLeft 获取到的值被取整 所以不能直接用上面的gridItemW gridItemH
-              this.gridOffsetWidth = this.$refs['grid_2'][0].offsetLeft
-              this.gridOffsetHeight = this.$refs['grid_' + (val + 1)][0].offsetTop
-              this.calcInit()
-            })
           }
         })
       })
