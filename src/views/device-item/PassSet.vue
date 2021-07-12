@@ -1,7 +1,7 @@
 <template>
   <div>
     <div id="gridWrapPassSet" :style="tempClass">
-      <div v-for="(item,k) in gridForPassSet.gridTotal" :key="k" class="gridItem" :class="{ outline: item.serial === currGrid.serial }" :style="{ gridArea: item.gridArea }" @click="checkGrid(item)">{{ k + 1 }}</div>
+      <div v-for="(item,k) in gridForPassSet.gridTotal" :key="k" class="gridItem" :class="{ outline: item.serial === currGrid.serial }" :style="{ gridArea: item.gridarea }" @click="checkGrid(item)">{{ k + 1 }}</div>
     </div>
     <el-row :gutter="3">
       <el-col :span="1"><div class="tableHead">序号</div></el-col>
@@ -139,7 +139,9 @@
           <el-col :span="2">
             <div class="tableTd">
               <el-form-item prop="receiveip" class="my-form-item">
-                <el-input v-model="frames[k].receiveip" placeholder="请输入接收网卡IP地址" disabled />
+                <el-select v-model="frames[k].receiveip" placeholder="请选择接收网卡IP地址" style="width: 100%;">
+                  <el-option v-for="it in devipsArr" :key="it" :value="it" :label="it" />
+                </el-select>
               </el-form-item>
             </div>
           </el-col>
@@ -167,6 +169,12 @@ export default {
         return []
       }
     },
+    devipsArr: {
+      type: Array,
+      default: function() {
+        return []
+      }
+    },
     gridForPassSet: {
       type: Object,
       default: function() {
@@ -178,6 +186,10 @@ export default {
       default: function() {
         return []
       }
+    },
+    mediapath: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -237,10 +249,6 @@ export default {
     }
   },
   watch: {
-    // editframes(val) {
-    //   console.log('变了')
-    //   this.frames = val
-    // },
     gridForPassSet(val) {
       var gridWrap = document.querySelector('#gridWrapPassSet')
       if (gridWrap) {
@@ -255,18 +263,30 @@ export default {
         }
       }
       this.frames = []
-      // if (this.editframes.length) {
-      //   this.frames = this.editframes
-      // } else {
+
       if (val.gridTotal && val.gridTotal.length) {
         for (var i = 0; i < val.gridTotal.length; i++) {
           var copyForm = JSON.parse(JSON.stringify(this.formdataTemp))
           copyForm.frameno = i + 1
+          if (this.editframes.length && this.editframes[i]) {
+            copyForm.channel = this.editframes[i].channel
+            copyForm.decoder = this.editframes[i].decoder
+            copyForm.recordpath = this.editframes[i].recordpath
+            copyForm.encoder = this.editframes[i].encoder
+            copyForm.width = this.editframes[i].width
+            copyForm.height = this.editframes[i].height
+            copyForm.bitrate = this.editframes[i].bitrate
+            copyForm.recordfile = this.editframes[i].recordfile
+            copyForm.frozenduration = this.editframes[i].frozenduration
+            copyForm.blackduration = this.editframes[i].blackduration
+            copyForm.silenceduration = this.editframes[i].silenceduration
+            copyForm.burstduration = this.editframes[i].burstduration
+            copyForm.receiveip = this.editframes[i].receiveip
+          }
           copyForm = { ...copyForm, ...val.gridTotal[i] }
           this.frames.push(copyForm)
         }
       }
-      // }
     }
   },
   mounted() {

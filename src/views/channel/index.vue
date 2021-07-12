@@ -59,6 +59,12 @@
           <span>{{ row.chnurl }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="报警" align="center">
+        <template slot-scope="{row}">
+          <el-tag v-if="row.alarmflag === 1" type="success">开启</el-tag>
+          <el-tag v-if="row.alarmflag === 0" type="danger">关闭</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="状态" align="center">
         <template slot-scope="{row}">
           <span>{{ row.statusstr }}</span>
@@ -66,8 +72,8 @@
       </el-table-column>
       <el-table-column label="操作" align="center">
         <template slot-scope="{row, $index}">
-          <!-- <el-button type="text" size="medium" @click="actived(row.id, $index)">启用</el-button>
-          <el-button type="text" size="medium" @click="inactived(row.id, $index)">停止</el-button> -->
+          <el-button v-if="row.alarmflag === 0" type="text" size="medium" @click="alarmon(row.id, $index)">开启报警</el-button>
+          <el-button v-if="row.alarmflag === 1" type="text" size="medium" @click="alarmoff(row.id, $index)">关闭报警</el-button>
           <el-button type="text" size="medium" @click="editHandle(row, $index)">编辑</el-button>
           <el-popover
             placement="top"
@@ -92,7 +98,7 @@
 </template>
 
 <script>
-import { fetchList, actived, inactived, deleteChannel } from '@/api/channel'
+import { fetchList, alarmon, alarmoff, deleteChannel } from '@/api/channel'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import Add from './add.vue'
@@ -160,19 +166,19 @@ export default {
       this.$refs[formName].resetFields()
       this.handleFilter()
     },
-    actived(id, idx) {
-      actived({ id: id }).then(data => {
+    alarmon(id, idx) {
+      alarmon({ id: id }).then(data => {
         this.$message({
-          message: '启用成功！',
+          message: '开启报警成功！',
           type: 'success'
         })
         this.getList()
       })
     },
-    inactived(id, idx) {
-      inactived({ id: id }).then(data => {
+    alarmoff(id, idx) {
+      alarmoff({ id: id }).then(data => {
         this.$message({
-          message: '停止成功！',
+          message: '关闭报警成功！',
           type: 'success'
         })
         this.getList()

@@ -31,16 +31,16 @@ export function getAllChannels() {
   })
 }
 
-export function actived(query) {
+export function alarmon(query) {
   return request({
-    url: '/admin/monitor/v1/channels/' + query.id + '/on',
+    url: '/admin/monitor/v1/channels/' + query.id + '/alarmon',
     method: 'put'
   })
 }
 
-export function inactived(query) {
+export function alarmoff(query) {
   return request({
-    url: '/admin/monitor/v1/channels/' + query.id + '/off',
+    url: '/admin/monitor/v1/channels/' + query.id + '/alarmoff',
     method: 'put'
   })
 }

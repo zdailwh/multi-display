@@ -6,11 +6,17 @@
       </el-tab-pane>
       <el-tab-pane label="基础配置" name="form1">
         <div class="formWrap">
-          <el-form ref="form1" :model="form1" :rules="ruleValidateForm1" label-width="120px">
+          <el-form ref="form1" :model="form1" :rules="ruleValidateForm1" label-width="160px">
             <el-form-item label="banner文字" prop="bannertitle">
               <el-input v-model="form1.bannertitle" placeholder="请输入banner文字" />
             </el-form-item>
-            <el-form-item label="banner高度" prop="bannerheight">
+            <el-form-item label="banner高度设置方式" prop="bannertype">
+              <el-select v-model="form1.bannertype" placeholder="请选择banner高度设置方式" style="width: 100%;">
+                <el-option :value="0" label="自适应" />
+                <el-option :value="1" label="自定义" disabled />
+              </el-select>
+            </el-form-item>
+            <el-form-item v-if="form1.bannertype === 1" label="banner高度" prop="bannerheight">
               <el-input v-model="form1.bannerheight" readonly placeholder="请输入banner高度" />
             </el-form-item>
             <el-form-item>
@@ -35,7 +41,7 @@
             <el-form-item label="画框绘制">
               <el-checkbox-group v-model="checkList">
                 <div id="gridWrap" :style="tempClass">
-                  <div v-for="(item,k) in gridTotal" :key="k" :ref="'grid_' + item.serial" class="gridItem" :style="{ gridArea: item.gridArea }"><el-checkbox-button :label="item">{{ k + 1 }}</el-checkbox-button></div>
+                  <div v-for="(item,k) in gridTotal" :key="k" :ref="'grid_' + item.serial" class="gridItem" :style="{ gridArea: item.gridarea }"><el-checkbox-button :label="item">{{ k + 1 }}</el-checkbox-button></div>
                 </div>
               </el-checkbox-group>
               <p>
@@ -50,7 +56,7 @@
         </div>
       </el-tab-pane>
       <el-tab-pane label="通道配置" name="passset">
-        <PassSet ref="passset" :allchannels="allChannels" :grid-for-pass-set="gridForPassSet" :editframes="currDevice.frames" @submitAll="submitAll" />
+        <PassSet ref="passset" :allchannels="allChannels" :devips-arr="devipsArr" :grid-for-pass-set="gridForPassSet" :editframes="currDevice.frames" :mediapath="currDevice.mediapath" @submitAll="submitAll" />
       </el-tab-pane>
       <el-tab-pane label="报警信息" name="warn">
         <Warn ref="warn" :deviceid="id" :allchannels="allChannels" />
@@ -75,11 +81,15 @@ export default {
       currDevice: {},
       form1: {
         bannertitle: '',
+        bannertype: 0,
         bannerheight: 0
       },
       ruleValidateForm1: {
         bannertitle: [
           { required: true, message: 'banner名称不能为空', trigger: 'blur' }
+        ],
+        bannertype: [
+          { required: true, message: 'banner高度设置方式不能为空', trigger: 'change' }
         ],
         bannerheight: [
           { required: true, message: 'banner高度不能为空', trigger: 'blur' }
@@ -101,7 +111,8 @@ export default {
       channelW: 0,
       channelH: 0,
       bannH: 0,
-      gridForPassSet: {}
+      gridForPassSet: {},
+      devipsArr: []
     }
   },
   watch: {
@@ -131,8 +142,10 @@ export default {
     getDevice() {
       getDevice({ id: this.id }).then(response => {
         this.currDevice = response
+        this.devipsArr = this.currDevice.devips.split('|')
         this.form1 = {
           bannertitle: this.currDevice.bannertitle,
+          bannertype: this.currDevice.bannertype,
           bannerheight: this.currDevice.bannerheight
         }
         if (this.currDevice.framegrid) {
@@ -147,7 +160,7 @@ export default {
         // for (var i = 0; i < this.currDevice.framecnt; i++) {
         //   gridArr.push({
         //     serial: this.currDevice.frames[i].serial,
-        //     gridArea: this.currDevice.frames[i].gridArea,
+        //     gridarea: this.currDevice.frames[i].gridarea,
         //     displayx: this.currDevice.frames[i].displayx,
         //     displayy: this.currDevice.frames[i].displayy,
         //     displayw: this.currDevice.frames[i].displayw,
@@ -164,6 +177,7 @@ export default {
       this.channelW = Math.round(1920 / val)
       this.channelH = Math.round(this.channelW / 1.05 * 9 / 16)
       this.bannH = 1080 - this.channelH * val
+      this.form1.bannerheight = this.bannH
       var gridWrap = document.querySelector('#gridWrap')
 
       this.$nextTick(() => {
@@ -195,7 +209,7 @@ export default {
               for (var i = 0; i < num; i++) {
                 gridArr.push({
                   serial: i + 1,
-                  gridArea: '',
+                  gridarea: '',
                   displayx: '',
                   displayy: '',
                   displayw: '',
@@ -241,7 +255,7 @@ export default {
       var originColumnSpan = parseInt(leftTopItem.displayh / this.channelH)
       var columnStart = parseInt(leftTopItem.displayx / this.channelW) + 1
       var rowStart = parseInt(leftTopItem.displayy / this.channelH) + 1
-      this.gridTotal[leftTopItem.serial - 1].gridArea = `${rowStart} / ${columnStart} / span ${originRowSpan * row_num} / span ${originColumnSpan * row_num}`
+      this.gridTotal[leftTopItem.serial - 1].gridarea = `${rowStart} / ${columnStart} / span ${originRowSpan * row_num} / span ${originColumnSpan * row_num}`
 
       this.$nextTick(() => {
         this.gridTotal.map((item) => {
