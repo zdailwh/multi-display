@@ -46,6 +46,18 @@ export default {
     }
   },
   watch: {
+    device(val) {
+      if (val.voicemode) {
+        this.formdata.voice = val.voicemode
+      } else {
+        this.formdata.voice = ''
+      }
+      if (val.screenmode) {
+        this.formdata.screen = val.screenmode
+      } else {
+        this.formdata.screen = ''
+      }
+    },
     'formdata.voice': function(val) {
       if (val) {
         this.formdata.screen = ''

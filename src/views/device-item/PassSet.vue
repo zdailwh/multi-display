@@ -141,6 +141,7 @@
             <div class="tableTd">
               <el-form-item prop="receiveip" class="my-form-item">
                 <el-select v-model="frames[k].receiveip" placeholder="请选择接收网卡IP地址" style="width: 100%;">
+                  <el-option value="" label="空" />
                   <el-option v-for="it in devipsArr" :key="it" :value="it" :label="it" />
                 </el-select>
               </el-form-item>
