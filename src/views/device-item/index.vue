@@ -2,7 +2,7 @@
   <div v-if="id" class="app-container">
     <el-tabs v-model="currTab" type="border-card">
       <el-tab-pane label="操控" name="operate">
-        <Operate :deviceid="id" :device="currDevice" />
+        <Operate :deviceid="id" :device="currDevice" @getdevice="getDevice" />
       </el-tab-pane>
       <el-tab-pane label="基础配置" name="form1">
         <div class="formWrap">
@@ -434,6 +434,7 @@ export default {
           message: '编辑成功！',
           type: 'success'
         })
+        this.getDevice()
       })
     }
   }

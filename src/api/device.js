@@ -79,6 +79,13 @@ export function unmuteDevice(data) {
     }
   })
 }
+// 软件重启
+export function confignew(data) {
+  return request({
+    url: '/admin/monitor/v1/devices/' + data.id + '/confignew',
+    method: 'put'
+  })
+}
 
 // 获取报警信息
 export function getAlarms(query) {
