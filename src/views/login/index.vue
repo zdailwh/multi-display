@@ -54,6 +54,7 @@
 
 <script>
 // import { validUsername } from '@/utils/validate'
+import { fetchList } from '@/api/device'
 
 export default {
   name: 'Login',
@@ -135,7 +136,7 @@ export default {
           this.loading = true
           this.$store.dispatch('user/login', this.loginForm)
             .then(() => {
-              this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
+              this.getDeviceList()
               this.loading = false
             })
             .catch(() => {
@@ -154,6 +155,33 @@ export default {
         }
         return acc
       }, {})
+    },
+    getDeviceList() {
+      fetchList({ page: 1, limit: 100 }).then(data => {
+        var devlist = data.items
+        var routes = this.$store.getters.permission_routes
+        if (devlist.length) {
+          routes.map((item) => {
+            if (item.path === '/deviceItem') {
+              item.children = []
+              devlist.map((it) => {
+                var rout = {
+                  path: `detail/${it.id}`,
+                  component: () => import('@/views/device-item/index'),
+                  meta: { title: `${it.name}`, icon: 'el-icon-position' }
+                }
+                item.children.push(rout)
+              })
+            }
+          })
+          this.$nextTick(() => {
+            this.$router.push({ path: '/deviceItem/detail/' + devlist[0].id })
+          })
+        } else {
+          this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
+        }
+      }).catch(() => {
+      })
     }
     // afterQRScan() {
     //   if (e.key === 'x-admin-oauth-code') {
