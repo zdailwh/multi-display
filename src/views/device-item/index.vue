@@ -75,7 +75,7 @@ export default {
   components: { PassSet, Operate, Warn },
   data() {
     return {
-      currTab: 'operate',
+      currTab: 'warn',
       allChannels: [],
       id: null,
       currDevice: {},

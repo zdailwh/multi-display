@@ -94,6 +94,12 @@ export function getAlarms(query) {
     per_page: query.limit
   }
 
+  if (query.create_time_range && query.create_time_range.length) {
+    params.create_time_range = query.create_time_range
+  }
+  if (query.update_time_range && query.update_time_range.length) {
+    params.update_time_range = query.update_time_range
+  }
   if (query.device_id !== '') {
     params.device_id = query.device_id
   }

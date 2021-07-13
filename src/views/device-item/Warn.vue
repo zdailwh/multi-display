@@ -17,6 +17,24 @@
           <el-option label="断流" :value="4" />
         </el-select>
       </el-form-item>
+      <el-form-item prop="create_time_range">
+        <el-date-picker
+          v-model="filterForm.create_time_range"
+          type="datetimerange"
+          value-format="yyyy-MM-dd HH:mm:ss"
+          start-placeholder="创建开始日期"
+          end-placeholder="创建结束日期"
+        />
+      </el-form-item>
+      <el-form-item prop="update_time_range">
+        <el-date-picker
+          v-model="filterForm.update_time_range"
+          type="datetimerange"
+          value-format="yyyy-MM-dd HH:mm:ss"
+          start-placeholder="更新开始日期"
+          end-placeholder="更新结束日期"
+        />
+      </el-form-item>
       <el-form-item>
         <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
           搜索
@@ -28,11 +46,11 @@
     </el-form>
 
     <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;">
-      <el-table-column label="ID" align="center">
+      <!-- <el-table-column label="ID" align="center">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column label="频道" align="center">
         <template slot-scope="{row}">
           <span>{{ row.channel.name }}</span>
@@ -63,11 +81,11 @@
           <span>{{ row.duration }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="eventid" align="center">
+      <!-- <el-table-column label="eventid" align="center">
         <template slot-scope="{row}">
           <span>{{ row.eventid }}</span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column label="状态" align="center">
         <template slot-scope="{row}">
           <span>{{ row.statusstr }}</span>
@@ -109,6 +127,8 @@ export default {
         limit: 20
       },
       filterForm: {
+        create_time_range: [],
+        update_time_range: [],
         device_id: '',
         channel_id: '',
         type: ''
@@ -133,6 +153,12 @@ export default {
         limit: 20
       }
       this.listQuery.device_id = this.deviceid
+      if (this.filterForm.create_time_range && this.filterForm.create_time_range.length) {
+        this.listQuery.create_time_range = this.filterForm.create_time_range
+      }
+      if (this.filterForm.update_time_range && this.filterForm.update_time_range.length) {
+        this.listQuery.update_time_range = this.filterForm.update_time_range
+      }
       if (this.filterForm.channel_id !== '') {
         this.listQuery.channel_id = this.filterForm.channel_id
       }
