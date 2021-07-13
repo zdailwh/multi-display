@@ -56,7 +56,7 @@
           <span>{{ row.ip }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="输出网卡IP" align="center">
+      <el-table-column label="输入网卡IP" align="center">
         <template slot-scope="{row}">
           <span>{{ row.devips }}</span>
         </template>

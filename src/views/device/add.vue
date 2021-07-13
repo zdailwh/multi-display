@@ -19,7 +19,7 @@
         <el-form-item label="设备IP" prop="ip">
           <el-input v-model="formadd.ip" placeholder="请输入设备IP" />
         </el-form-item>
-        <el-form-item label="输出网卡IP" prop="devips">
+        <el-form-item label="输入网卡IP" prop="devips">
           <el-input v-model="formadd.devips" placeholder="当为多个IP时，用|连接，如：127.0.0.0|127.0.0.1|127.0.0.2" />
         </el-form-item>
         <el-form-item label="媒资目录" prop="mediapath">
@@ -62,7 +62,7 @@ export default {
           { required: true, message: '设备IP不能为空', trigger: 'blur' }
         ],
         devips: [
-          { required: true, message: '输出网卡IP不能为空', trigger: 'blur' }
+          { required: true, message: '输入网卡IP不能为空', trigger: 'blur' }
         ],
         mediapath: [
           { required: true, message: '媒资目录不能为空', trigger: 'blur' }
