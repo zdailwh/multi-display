@@ -14,6 +14,7 @@
           <el-option label="黑场" :value="1" />
           <el-option label="静音" :value="2" />
           <el-option label="爆音" :value="3" />
+          <el-option label="断流" :value="4" />
         </el-select>
       </el-form-item>
       <el-form-item>

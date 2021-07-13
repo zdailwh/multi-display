@@ -206,7 +206,7 @@ export default {
         encoder: 'cpu',
         width: 640,
         height: 360,
-        bitrate: '2M',
+        bitrate: '1M',
         recordfile: 'ts',
         frozenduration: 3,
         blackduration: 3,
