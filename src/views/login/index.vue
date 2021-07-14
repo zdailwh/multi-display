@@ -55,6 +55,7 @@
 <script>
 // import { validUsername } from '@/utils/validate'
 import { fetchList } from '@/api/device'
+import router from '../../router'
 
 export default {
   name: 'Login',
@@ -159,7 +160,7 @@ export default {
     getDeviceList() {
       fetchList({ page: 1, limit: 100 }).then(data => {
         var devlist = data.items
-        var routes = this.$store.getters.permission_routes
+        var routes = router.options.routes
         if (devlist.length) {
           routes.map((item) => {
             if (item.path === '/deviceItem') {
