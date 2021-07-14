@@ -1,12 +1,6 @@
 <template>
   <div class="app-container">
     <el-form ref="filterForm" :model="filterForm" :inline="true" class="filter-form">
-      <el-form-item prop="name">
-        <el-input v-model="filterForm.name" placeholder="频道名称" style="width:120px" />
-      </el-form-item>
-      <el-form-item prop="no">
-        <el-input v-model="filterForm.no" placeholder="频道编号" style="width:120px" />
-      </el-form-item>
       <el-form-item prop="create_time_range">
         <el-date-picker
           v-model="filterForm.create_time_range"
@@ -25,6 +19,13 @@
           end-placeholder="更新结束日期"
         />
       </el-form-item>
+      <br>
+      <el-form-item prop="name">
+        <el-input v-model="filterForm.name" placeholder="频道名称" style="width:120px" />
+      </el-form-item>
+      <el-form-item prop="no">
+        <el-input v-model="filterForm.no" placeholder="频道编号" style="width:120px" />
+      </el-form-item>
       <el-form-item>
         <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
           搜索
@@ -38,39 +39,39 @@
       </el-button>
     </el-form>
 
-    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;">
+    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 841px;">
       <el-table-column label="频道编号" align="center" width="80">
         <template slot-scope="{row}">
           <span>{{ row.no }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="频道名称" align="center">
+      <el-table-column label="频道名称" align="center" width="120">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="频道类型" align="center">
+      <el-table-column label="频道类型" align="center" width="80">
         <template slot-scope="{row}">
           <span>{{ row.type === 0 ? '电视' : '广播' }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="频道链接" align="center">
+      <el-table-column label="频道链接" align="center" width="200">
         <template slot-scope="{row}">
           <span>{{ row.chnurl }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="报警" align="center">
+      <el-table-column label="报警" align="center" width="80">
         <template slot-scope="{row}">
           <el-tag v-if="row.alarmflag === 1" type="success">开启</el-tag>
           <el-tag v-if="row.alarmflag === 0" type="danger">关闭</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="状态" align="center">
+      <el-table-column label="状态" align="center" width="80">
         <template slot-scope="{row}">
           <span>{{ row.statusstr }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center">
+      <el-table-column label="操作" align="center" width="200">
         <template slot-scope="{row, $index}">
           <el-button v-if="row.alarmflag === 0" type="text" size="medium" @click="alarmon(row.id, $index)">开启报警</el-button>
           <el-button v-if="row.alarmflag === 1" type="text" size="medium" @click="alarmoff(row.id, $index)">关闭报警</el-button>

@@ -35,18 +35,18 @@
       </el-button>
     </el-form>
 
-    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;">
-      <el-table-column label="ID" align="center">
+    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 1311px;">
+      <!-- <el-table-column label="ID" align="center">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
         </template>
-      </el-table-column>
-      <el-table-column label="设备名称" align="center">
+      </el-table-column> -->
+      <el-table-column label="设备名称" align="center" width="120">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="设备类型" align="center">
+      <el-table-column label="设备类型" align="center" width="120">
         <template slot-scope="{row}">
           <span>{{ row.devicetype === 0 ? '多画面监看': '录制服务器' }}</span>
         </template>
@@ -56,12 +56,12 @@
           <span>{{ row.ip }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="输入网卡IP" align="center">
+      <el-table-column label="输入网卡IP" align="center" width="250">
         <template slot-scope="{row}">
           <span>{{ row.devips }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="媒资目录" align="center">
+      <el-table-column label="媒资目录" align="center" width="200">
         <template slot-scope="{row}">
           <span>{{ row.mediapath }}</span>
         </template>
@@ -71,22 +71,22 @@
           <span>{{ row.heartbeat }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="总空间" align="center" width="120">
+      <el-table-column label="总空间" align="center" width="100">
         <template slot-scope="{row}">
           <span>{{ row.spacetotal }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="可用空间" align="center" width="120">
+      <el-table-column label="可用空间" align="center" width="100">
         <template slot-scope="{row}">
           <span>{{ row.spaceavail }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" align="center" width="120">
+      <el-table-column label="状态" align="center" width="80">
         <template slot-scope="{row}">
           <span>{{ row.statusstr }}</span>
         </template>
       </el-table-column>
-      <el-table-column v-if="!isVisitor" label="操作" align="center">
+      <el-table-column v-if="!isVisitor" label="操作" align="center" width="120">
         <template slot-scope="{row, $index}">
           <el-button type="text" size="medium" @click="editHandle(row, $index)">编辑</el-button>
           <el-button type="text" size="medium" @click="delHandler(row.id, $index)">删除</el-button>

@@ -1,22 +1,6 @@
 <template>
-  <div class="app-container">
+  <div>
     <el-form ref="filterForm" :model="filterForm" :inline="true" class="filter-form">
-      <el-form-item prop="channel_id">
-        <el-select v-model="filterForm.channel_id" placeholder="请选择频道">
-          <el-option label="全部频道" value="" />
-          <el-option v-for="(it, i) in allchannels" :key="i" :value="it.id" :label="it.name" />
-        </el-select>
-      </el-form-item>
-      <el-form-item prop="type">
-        <el-select v-model="filterForm.type" placeholder="类型">
-          <el-option label="全部类型" value="" />
-          <el-option label="静帧" :value="0" />
-          <el-option label="黑场" :value="1" />
-          <el-option label="静音" :value="2" />
-          <el-option label="爆音" :value="3" />
-          <el-option label="断流" :value="4" />
-        </el-select>
-      </el-form-item>
       <el-form-item prop="create_time_range">
         <el-date-picker
           v-model="filterForm.create_time_range"
@@ -35,6 +19,23 @@
           end-placeholder="更新结束日期"
         />
       </el-form-item>
+      <br>
+      <el-form-item prop="channel_id">
+        <el-select v-model="filterForm.channel_id" placeholder="请选择频道">
+          <el-option label="全部频道" value="" />
+          <el-option v-for="(it, i) in allchannels" :key="i" :value="it.id" :label="it.name" />
+        </el-select>
+      </el-form-item>
+      <el-form-item prop="type">
+        <el-select v-model="filterForm.type" placeholder="类型">
+          <el-option label="全部类型" value="" />
+          <el-option label="静帧" :value="0" />
+          <el-option label="黑场" :value="1" />
+          <el-option label="静音" :value="2" />
+          <el-option label="爆音" :value="3" />
+          <el-option label="断流" :value="4" />
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
           搜索
@@ -45,38 +46,38 @@
       </el-form-item>
     </el-form>
 
-    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;">
+    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 841px;">
       <!-- <el-table-column label="ID" align="center">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
         </template>
       </el-table-column> -->
-      <el-table-column label="频道" align="center">
+      <el-table-column label="频道" align="center" width="120">
         <template slot-scope="{row}">
           <span>{{ row.channel.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="设备" align="center">
+      <el-table-column label="设备" align="center" width="120">
         <template slot-scope="{row}">
           <span>{{ row.device.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="报警类型" align="center">
+      <el-table-column label="报警类型" align="center" width="80">
         <template slot-scope="{row}">
           <span>{{ row.typestr }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="开始时间" align="center">
+      <el-table-column label="开始时间" align="center" width="160">
         <template slot-scope="{row}">
           <span>{{ row.starttime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="恢复时间" align="center">
+      <el-table-column label="恢复时间" align="center" width="160">
         <template slot-scope="{row}">
           <span>{{ row.recoverytime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="时长" align="center">
+      <el-table-column label="时长" align="center" width="80">
         <template slot-scope="{row}">
           <span>{{ row.duration }}</span>
         </template>
@@ -86,7 +87,7 @@
           <span>{{ row.eventid }}</span>
         </template>
       </el-table-column> -->
-      <el-table-column label="状态" align="center">
+      <el-table-column label="状态" align="center" width="120">
         <template slot-scope="{row}">
           <span>{{ row.statusstr }}</span>
         </template>
