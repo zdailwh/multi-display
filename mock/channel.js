@@ -12,6 +12,8 @@ for (let i = 0; i < count; i++) {
     epgurl: '/service1/XML/',
     width: '1920',
     height: '1080',
+    alarmflag: 0,
+    showflag: 1,
     'status|1': [0, 1, 2]
   }))
 }
@@ -24,6 +26,8 @@ const user = Mock.mock({
   epgurl: '/service1/XML/',
   width: '1920',
   height: '1080',
+  alarmflag: 0,
+  showflag: 1,
   'status|1': [0, 1, 2]
 })
 

@@ -39,7 +39,7 @@
       </el-button>
     </el-form>
 
-    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 841px;">
+    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 971px;">
       <el-table-column label="频道编号" align="center" width="80">
         <template slot-scope="{row}">
           <span>{{ row.no }}</span>
@@ -66,15 +66,19 @@
           <el-tag v-if="row.alarmflag === 0" type="danger">关闭</el-tag>
         </template>
       </el-table-column>
+      <el-table-column label="名称显示" align="center" width="80">
+        <template slot-scope="{row}">
+          <el-tag v-if="row.showflag === 1" type="success">显示</el-tag>
+          <el-tag v-if="row.showflag === 0" type="danger">隐藏</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="状态" align="center" width="80">
         <template slot-scope="{row}">
           <span>{{ row.statusstr }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="200">
+      <el-table-column label="操作" align="center" width="250">
         <template slot-scope="{row, $index}">
-          <el-button v-if="row.alarmflag === 0" type="text" size="medium" @click="alarmon(row.id, $index)">开启报警</el-button>
-          <el-button v-if="row.alarmflag === 1" type="text" size="medium" @click="alarmoff(row.id, $index)">关闭报警</el-button>
           <el-button type="text" size="medium" @click="editHandle(row, $index)">编辑</el-button>
           <el-popover
             placement="top"
@@ -85,8 +89,12 @@
             <div style="text-align: right; margin: 0">
               <el-button type="danger" size="mini" @click="delChannel(row.id, $index)">确定</el-button>
             </div>
-            <el-button slot="reference" type="text" size="medium" style="margin-left: 10px;">删除</el-button>
+            <el-button slot="reference" type="text" size="medium" style="margin: 0 10px;">删除</el-button>
           </el-popover>
+          <el-button v-if="row.alarmflag === 0" type="text" size="medium" @click="alarmon(row.id, $index)">开启报警</el-button>
+          <el-button v-if="row.alarmflag === 1" type="text" size="medium" @click="alarmoff(row.id, $index)">关闭报警</el-button>
+          <el-button v-if="row.showflag === 0" type="text" size="medium" @click="showon(row.id, $index)">显示名称</el-button>
+          <el-button v-if="row.showflag === 1" type="text" size="medium" @click="showoff(row.id, $index)">隐藏名称</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -99,7 +107,7 @@
 </template>
 
 <script>
-import { fetchList, alarmon, alarmoff, deleteChannel } from '@/api/channel'
+import { fetchList, alarmon, alarmoff, showon, showoff, deleteChannel } from '@/api/channel'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import Add from './add.vue'
@@ -180,6 +188,24 @@ export default {
       alarmoff({ id: id }).then(data => {
         this.$message({
           message: '关闭报警成功！',
+          type: 'success'
+        })
+        this.getList()
+      })
+    },
+    showon(id, idx) {
+      showon({ id: id }).then(data => {
+        this.$message({
+          message: '显示名称成功！',
+          type: 'success'
+        })
+        this.getList()
+      })
+    },
+    showoff(id, idx) {
+      showoff({ id: id }).then(data => {
+        this.$message({
+          message: '隐藏名称成功！',
           type: 'success'
         })
         this.getList()

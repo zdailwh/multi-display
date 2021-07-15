@@ -74,3 +74,17 @@ export function deleteChannel(query) {
     method: 'delete'
   })
 }
+
+export function showon(query) {
+  return request({
+    url: '/admin/monitor/v1/channels/' + query.id + '/showon',
+    method: 'put'
+  })
+}
+
+export function showoff(query) {
+  return request({
+    url: '/admin/monitor/v1/channels/' + query.id + '/showoff',
+    method: 'put'
+  })
+}
