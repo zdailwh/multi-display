@@ -27,7 +27,12 @@ export function fetchList(query) {
 export function getAllChannels() {
   return request({
     url: '/admin/monitor/v1/channels',
-    method: 'get'
+    method: 'get',
+    params: {
+      orderby: 'no',
+      page: 0,
+      per_page: 500
+    }
   })
 }
 
