@@ -86,6 +86,16 @@ export function confignew(data) {
     method: 'put'
   })
 }
+// 频道重启
+export function versionew(data) {
+  return request({
+    url: '/admin/monitor/v1/devices/' + data.id + '/channelreset',
+    method: 'put',
+    data: {
+      frameno: data.frameno
+    }
+  })
+}
 
 // 获取报警信息
 export function getAlarms(query) {

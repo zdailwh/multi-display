@@ -4,6 +4,9 @@
       <el-tab-pane label="操控" name="operate">
         <Operate :deviceid="id" :device="currDevice" @getdevice="getDevice" />
       </el-tab-pane>
+      <el-tab-pane label="报警信息" name="warn">
+        <Warn ref="warn" :deviceid="id" :allchannels="allChannels" />
+      </el-tab-pane>
       <el-tab-pane label="基础配置" name="form1">
         <div class="formWrap">
           <el-form ref="form1" :model="form1" :rules="ruleValidateForm1" label-width="160px">
@@ -57,9 +60,6 @@
       </el-tab-pane>
       <el-tab-pane label="通道配置" name="passset">
         <PassSet ref="passset" :allchannels="allChannels" :devips-arr="devipsArr" :grid-for-pass-set="gridForPassSet" :editframes="currDevice.frames" :mediapath="currDevice.mediapath" @submitAll="submitAll" />
-      </el-tab-pane>
-      <el-tab-pane label="报警信息" name="warn">
-        <Warn ref="warn" :deviceid="id" :allchannels="allChannels" />
       </el-tab-pane>
     </el-tabs>
   </div>

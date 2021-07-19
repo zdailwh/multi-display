@@ -14,15 +14,23 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="commit('formdata')">确 定</el-button>
-        <el-button @click="reset('formdata')">复 位</el-button>
-        <el-button type="warning" @click="confignew">软 件 重 启</el-button>
+        <el-button type="primary" :disabled="isPause" @click="commit('formdata')">确 定</el-button>
+        <el-button :disabled="isPause" @click="reset('formdata')">复 位</el-button>
+        <el-button type="warning" :disabled="isPause" @click="confignew">软 件 重 启</el-button>
+      </el-form-item>
+      <el-form-item label="频道重启" prop="screen">
+        <el-select v-model="formdata.channelRestart" value-key="frameno" placeholder="请选择要重启的频道" style="width: 100%;">
+          <el-option v-for="(item, i) in device.frames" :key="i" :value="item.frameno" :label="item.frameno + ' -- ' + (item.channel && item.channel.name)" :disabled="!item.channel" />
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="warning" :disabled="isPause" @click="versionew">频 道 重 启</el-button>
       </el-form-item>
     </el-form>
   </div>
 </template>
 <script>
-import { screenDevice, unmuteDevice, confignew } from '@/api/device'
+import { screenDevice, unmuteDevice, confignew, versionew } from '@/api/device'
 export default {
   props: {
     device: {
@@ -40,10 +48,12 @@ export default {
     return {
       formdata: {
         voice: 0,
-        screen: 0
+        screen: 0,
+        channelRestart: 0
       },
       ruleValidate: {
-      }
+      },
+      isPause: false
     }
   },
   watch: {
@@ -98,6 +108,7 @@ export default {
       }
     },
     unmuteDevice() {
+      this.toPause()
       unmuteDevice({ id: this.deviceid, frameno: this.formdata.voice }).then(response => {
         this.$message({
           message: '设置静音执行成功！',
@@ -107,6 +118,7 @@ export default {
       })
     },
     screenDevice() {
+      this.toPause()
       screenDevice({ id: this.deviceid, frameno: this.formdata.screen }).then(response => {
         this.$message({
           message: '设置全屏执行成功！',
@@ -116,12 +128,36 @@ export default {
       })
     },
     confignew() {
+      this.toPause()
       confignew({ id: this.deviceid }).then(response => {
         this.$message({
           message: '软件重启执行成功！',
           type: 'success'
         })
       })
+    },
+    versionew() {
+      if (!this.formdata.channelRestart) {
+        this.$message({
+          message: '请选择要重启的频道！',
+          type: 'warning'
+        })
+        return
+      }
+      this.toPause()
+      versionew({ id: this.deviceid, frameno: this.formdata.channelRestart }).then(response => {
+        this.$message({
+          message: '频道重启执行成功！',
+          type: 'success'
+        })
+      })
+    },
+    toPause() {
+      var that = this
+      this.isPause = true
+      window.setTimeout(function() {
+        that.isPause = false
+      }, 5000)
     }
   }
 }
