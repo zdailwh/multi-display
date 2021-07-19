@@ -161,7 +161,7 @@ export default {
       fetchList({ page: 1, limit: 100 }).then(data => {
         var devlist = data.items
         var routes = router.options.routes
-        if (devlist.length) {
+        if (routes.length && devlist.length) {
           routes.map((item) => {
             if (item.path === '/deviceItem') {
               item.children = []
