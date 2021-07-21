@@ -14,9 +14,9 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" :disabled="isPause" @click="commit('formdata')">确 定</el-button>
-        <el-button :disabled="isPause" @click="reset('formdata')">复 位</el-button>
-        <el-button type="warning" :disabled="isPause" @click="confignew">软 件 重 启</el-button>
+        <el-button type="primary" :disabled="isVisitor || isPause" @click="commit('formdata')">确 定</el-button>
+        <el-button :disabled="isVisitor || isPause" @click="reset('formdata')">复 位</el-button>
+        <el-button type="warning" :disabled="isVisitor || isPause" @click="confignew">软 件 重 启</el-button>
       </el-form-item>
       <el-form-item label="频道重启" prop="screen">
         <el-select v-model="formdata.channelRestart" value-key="frameno" placeholder="请选择要重启的频道" style="width: 100%;">
@@ -24,12 +24,13 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="warning" :disabled="isPause" @click="versionew">频 道 重 启</el-button>
+        <el-button type="warning" :disabled="isVisitor || isPause" @click="versionew">频 道 重 启</el-button>
       </el-form-item>
     </el-form>
   </div>
 </template>
 <script>
+import Cookies from 'js-cookie'
 import { screenDevice, unmuteDevice, confignew, versionew } from '@/api/device'
 export default {
   props: {
@@ -46,6 +47,7 @@ export default {
   },
   data() {
     return {
+      isVisitor: (Cookies.get('MultiDisplay-isVisitor') && JSON.parse(Cookies.get('MultiDisplay-isVisitor'))) || false,
       formdata: {
         voice: 0,
         screen: 0,

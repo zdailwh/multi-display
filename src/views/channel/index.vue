@@ -34,7 +34,7 @@
       <el-form-item>
         <el-button @click="resetForm('filterForm')">重置</el-button>
       </el-form-item>
-      <el-button class="filter-item" type="primary" icon="el-icon-plus" @click="dialogVisibleAdd = true">
+      <el-button v-if="!isVisitor" class="filter-item" type="primary" icon="el-icon-plus" @click="dialogVisibleAdd = true">
         创建频道
       </el-button>
     </el-form>
@@ -77,7 +77,7 @@
           <span>{{ row.statusstr }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="250">
+      <el-table-column v-if="!isVisitor" label="操作" align="center" width="250">
         <template slot-scope="{row, $index}">
           <el-button type="text" size="medium" @click="editHandle(row, $index)">编辑</el-button>
           <el-popover
@@ -107,6 +107,7 @@
 </template>
 
 <script>
+import Cookies from 'js-cookie'
 import { fetchList, alarmon, alarmoff, showon, showoff, deleteChannel } from '@/api/channel'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -118,6 +119,7 @@ export default {
   directives: { waves },
   data() {
     return {
+      isVisitor: (Cookies.get('MultiDisplay-isVisitor') && JSON.parse(Cookies.get('MultiDisplay-isVisitor'))) || false,
       list: null,
       total: 0,
       listLoading: true,

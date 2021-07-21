@@ -23,8 +23,8 @@
               <el-input v-model="form1.bannerheight" readonly placeholder="请输入banner高度" />
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="commit('form1')">下 一 步</el-button>
-              <el-button @click="reset('form1')">取 消</el-button>
+              <el-button type="primary" :disabled="isVisitor" @click="commit('form1')">下 一 步</el-button>
+              <el-button :disabled="isVisitor" @click="reset('form1')">取 消</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -48,12 +48,12 @@
                 </div>
               </el-checkbox-group>
               <p>
-                <el-button plain @click="toMerge">合并</el-button>
+                <el-button plain :disabled="isVisitor" @click="toMerge">合并</el-button>
               </p>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="commitTemp('form2')">下 一 步</el-button>
-              <el-button @click="reset('form2')">取 消</el-button>
+              <el-button type="primary" :disabled="isVisitor" @click="commitTemp('form2')">下 一 步</el-button>
+              <el-button :disabled="isVisitor" @click="reset('form2')">取 消</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -66,6 +66,7 @@
 </template>
 
 <script>
+import Cookies from 'js-cookie'
 import PassSet from './PassSet'
 import Operate from './Operate'
 import Warn from './Warn'
@@ -75,6 +76,7 @@ export default {
   components: { PassSet, Operate, Warn },
   data() {
     return {
+      isVisitor: (Cookies.get('MultiDisplay-isVisitor') && JSON.parse(Cookies.get('MultiDisplay-isVisitor'))) || false,
       currTab: 'warn',
       allChannels: [],
       id: null,

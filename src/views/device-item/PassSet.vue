@@ -158,11 +158,12 @@
       </el-form>
     </div>
     <div style="text-align: center;">
-      <el-button type="primary" round @click="savePassSet">保 存 配 置</el-button>
+      <el-button type="primary" round :disabled="isVisitor" @click="savePassSet">保 存 配 置</el-button>
     </div>
   </div>
 </template>
 <script>
+import Cookies from 'js-cookie'
 export default {
   props: {
     allchannels: {
@@ -196,6 +197,7 @@ export default {
   },
   data() {
     return {
+      isVisitor: (Cookies.get('MultiDisplay-isVisitor') && JSON.parse(Cookies.get('MultiDisplay-isVisitor'))) || false,
       tempClass: {},
       currGrid: {},
       formdataTemp: {

@@ -48,7 +48,7 @@ const actions = {
         commit('SET_ISADMIN', data.user.isadmin)
         commit('SET_TOKEN', JSON.stringify(data.user))
         setToken(JSON.stringify(data.user))
-        Cookies.set('Filereview-isVisitor', data.user.isadmin === 2)
+        Cookies.set('MultiDisplay-isVisitor', data.user.isadmin === 2)
         resolve()
       }).catch(error => {
         reject(error)
