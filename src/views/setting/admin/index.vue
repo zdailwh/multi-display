@@ -64,8 +64,9 @@
           <el-button v-if="currUser.isadmin !== '' && currUser.isadmin > 3 && row.status !== 1" type="text" size="medium" @click="actived(row.id, $index)">激活</el-button>
           <el-button v-if="currUser.isadmin !== '' && currUser.isadmin > 3 && row.status !== 2" type="text" size="medium" @click="inactived(row.id, $index)">禁用</el-button>
           <el-button v-if="parseInt(currUser.isadmin) > parseInt(row.isadmin) && parseInt(row.status) === 2" type="text" size="medium" @click="resetPwdHandle(row, $index)">重置密码</el-button>
+          <el-button v-if="currUser.isadmin !== '' && currUser.isadmin > 3 && row.status === 2" type="text" size="medium" @click="resetRoleHandle(row, $index)">修改角色</el-button>
           <el-popover
-            v-if="currUser.isadmin !== '' && currUser.isadmin > 3"
+            v-if="currUser.isadmin !== '' && currUser.isadmin > 3 && row.status === 2"
             placement="top"
             width="170"
             trigger="hover"
@@ -84,21 +85,23 @@
 
     <Add :dialog-visible-add="dialogVisibleAdd" :options-roles="optionsRoles" @changeAddVisible="changeAddVisible" @refresh="getList" />
     <ResetPwd :edit-item="editItem" :dialog-visible-reset-pwd="dialogVisibleResetPwd" @changeResetPwdVisible="changeResetPwdVisible" />
+    <ResetRole :edit-item="editItem" :options-roles="optionsRoles" :dialog-visible-reset-role="dialogVisibleResetRole" @changeResetRoleVisible="changeResetRoleVisible" @refresh="getList" />
   </div>
 </template>
 
 <script>
 import Cookies from 'js-cookie'
 import { fetchList, actived, inactived, deleteUser } from '@/api/admin'
-// import { getAllRoles } from '@/api/myrole'
+import { getAllRoles } from '@/api/myrole'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import Add from './add.vue'
 import ResetPwd from './resetPwd.vue'
+import ResetRole from './resetRole.vue'
 import { getToken } from '@/utils/auth'
 
 export default {
-  components: { Pagination, Add, ResetPwd },
+  components: { Pagination, Add, ResetPwd, ResetRole },
   directives: { waves },
   filters: {
     isadminFilter(val) {
@@ -130,6 +133,7 @@ export default {
       editIndex: '',
       dialogVisibleAdd: false,
       dialogVisibleResetPwd: false,
+      dialogVisibleResetRole: false,
       allRoles: [],
       optionsRoles: []
     }
@@ -148,7 +152,7 @@ export default {
   },
   created() {
     this.getList()
-    // this.getAllRoles()
+    this.getAllRoles()
   },
   methods: {
     getList() {
@@ -245,17 +249,24 @@ export default {
     },
     changeResetPwdVisible(params) {
       this.dialogVisibleResetPwd = params
+    },
+    resetRoleHandle(item, idx) {
+      this.editItem = item
+      this.dialogVisibleResetRole = true
+    },
+    changeResetRoleVisible(params) {
+      this.dialogVisibleResetRole = params
+    },
+    getAllRoles() {
+      getAllRoles().then(data => {
+        this.allRoles = data.items || []
+      }).catch(error => {
+        this.$message({
+          message: error.message || '操作失败！',
+          type: 'error'
+        })
+      })
     }
-    // getAllRoles() {
-    //   getAllRoles().then(data => {
-    //     this.allRoles = data.items || []
-    //   }).catch(error => {
-    //     this.$message({
-    //       message: error.message || '操作失败！',
-    //       type: 'error'
-    //     })
-    //   })
-    // }
   }
 }
 </script>

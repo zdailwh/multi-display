@@ -11,10 +11,28 @@ export function fetchList(query) {
   if (query.username !== '') {
     params.username = query.username
   }
+  params.orderby = 'id'
   return request({
     url: '/admin/v1/users',
     method: 'get',
     params
+  })
+}
+
+export function getAllUsers() {
+  var params = {}
+  params.orderby = 'id'
+  return request({
+    url: '/admin/v1/users',
+    method: 'get',
+    params
+  })
+}
+
+export function getUserRole(query) {
+  return request({
+    url: '/admin/v1/users/' + query.id + '/role',
+    method: 'get'
   })
 }
 
@@ -45,7 +63,6 @@ export function updateUser(data) {
     url: '/admin/v1/users/' + data.id,
     method: 'put',
     data: {
-      username: data.username,
       mobile: data.mobile
     }
   })

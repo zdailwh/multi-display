@@ -14,6 +14,7 @@ export function fetchList(query) {
   if (query.name !== '') {
     params.name = query.name
   }
+  params.orderby = 'id'
   return request({
     url: '/admin/monitor/v1/devices',
     method: 'get',

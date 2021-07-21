@@ -31,7 +31,7 @@
 </template>
 <script>
 import { createUser } from '@/api/admin'
-// import { createRoleUser } from '@/api/roleuser'
+import { createRoleUser } from '@/api/roleuser'
 import Cookies from 'js-cookie'
 export default {
   props: {
@@ -125,7 +125,7 @@ export default {
           message: '用户创建成功！',
           type: 'success'
         })
-        // this.createRoleUser(response.id, this.roleId)
+        this.createRoleUser(response.id, this.roleId)
         this.formadd = {
           username: '',
           password: '',
@@ -149,18 +149,18 @@ export default {
     handleClose(done) {
       this.$emit('changeAddVisible', false)
       // done()
+    },
+    createRoleUser(userId, roleId) {
+      createRoleUser({ userId: userId, roleId: roleId }).then(response => {
+        this.$message({
+          message: '用户角色关联创建成功！',
+          type: 'success'
+        })
+        this.$emit('changeAddVisible', false)
+        this.$emit('refresh')
+      }).catch(() => {
+      })
     }
-    // createRoleUser(userId, roleId) {
-    //   createRoleUser({ userId: userId, roleId: roleId }).then(response => {
-    //     this.$message({
-    //       message: '用户角色关联创建成功！',
-    //       type: 'success'
-    //     })
-    //     this.$emit('changeAddVisible', false)
-    //     this.$emit('refresh')
-    //   }).catch(() => {
-    //   })
-    // }
   }
 }
 </script>
