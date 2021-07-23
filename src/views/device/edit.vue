@@ -13,7 +13,7 @@
         <el-form-item label="设备类型" prop="devicetype">
           <el-select v-model="editItem.devicetype" placeholder="请选择设备类型" style="width: 100%;">
             <el-option :value="0" label="多画面监看" />
-            <el-option :value="1" label="录制服务器" disabled />
+            <el-option :value="1" label="录制服务器" />
           </el-select>
         </el-form-item>
         <el-form-item label="设备IP" prop="ip">
