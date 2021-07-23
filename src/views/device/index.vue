@@ -144,12 +144,22 @@ export default {
         if (item.path === '/deviceItem') {
           item.children = []
           val.map((it) => {
-            var rout = {
-              path: `detail/${it.id}`,
-              component: () => import('@/views/device-item/index'),
-              meta: { title: `${it.name}`, icon: 'el-icon-position' }
+            var rout = {}
+            if (it.devicetype === 0) {
+              rout = {
+                path: `detail/${it.id}`,
+                component: () => import('@/views/device-item/index'),
+                meta: { title: `${it.name}`, icon: 'el-icon-position' }
+              }
+              item.children.push(rout)
+            } else if (it.devicetype === 1) {
+              rout = {
+                path: `detail-luzhi/${it.id}`,
+                component: () => import('@/views/device-item/index-luzhi'),
+                meta: { title: `${it.name}`, icon: 'el-icon-position' }
+              }
+              item.children.push(rout)
             }
-            item.children.push(rout)
           })
         }
       })

@@ -9,6 +9,7 @@ for (let i = 0; i < count; i++) {
     create_time: '@datetime',
     name: '@first',
     port: '1',
+    devicetype: 1,
     'type|1': [1, 2],
     'status|1': [0, 1, 2]
   }))
@@ -27,7 +28,7 @@ const device = Mock.mock({
   ip: '192.168.6.201',
   name: 'test1',
   deviceid: 10000,
-  devicetype: 0,
+  devicetype: 1,
   devips: '192.168.6.201|192.168.10.201',
   mediapath: '/storage/record/',
   spacetotal: 0,

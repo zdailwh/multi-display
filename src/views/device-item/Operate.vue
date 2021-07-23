@@ -18,7 +18,7 @@
         <el-button :disabled="isVisitor || isPause" @click="reset('formdata')">复 位</el-button>
         <el-button type="warning" :disabled="isVisitor || isPause" @click="confignew">软 件 重 启</el-button>
       </el-form-item>
-      <el-form-item label="频道重启" prop="screen">
+      <el-form-item label="频道重启" prop="channelRestart">
         <el-select v-model="formdata.channelRestart" value-key="frameno" placeholder="请选择要重启的频道" style="width: 100%;">
           <el-option v-for="(item, i) in device.frames" :key="i" :value="item.frameno" :label="item.frameno + ' -- ' + (item.channel && item.channel.name)" :disabled="!item.channel" />
         </el-select>

@@ -97,6 +97,11 @@ export const constantRoutes = [
         path: 'detail/:id',
         component: () => import('@/views/device-item/index'),
         meta: { title: '多画面', icon: 'el-icon-video-camera' }
+      },
+      {
+        path: 'detail-luzhi/:id',
+        component: () => import('@/views/device-item/index-luzhi'),
+        meta: { title: '录制服务器', icon: 'el-icon-video-camera' }
       }
     ]
   },

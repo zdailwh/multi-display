@@ -166,17 +166,31 @@ export default {
             if (item.path === '/deviceItem') {
               item.children = []
               devlist.map((it) => {
-                var rout = {
-                  path: `detail/${it.id}`,
-                  component: () => import('@/views/device-item/index'),
-                  meta: { title: `${it.name}`, icon: 'el-icon-position' }
+                var rout = {}
+                if (it.devicetype === 0) {
+                  rout = {
+                    path: `detail/${it.id}`,
+                    component: () => import('@/views/device-item/index'),
+                    meta: { title: `${it.name}`, icon: 'el-icon-position' }
+                  }
+                  item.children.push(rout)
+                } else if (it.devicetype === 1) {
+                  rout = {
+                    path: `detail-luzhi/${it.id}`,
+                    component: () => import('@/views/device-item/index-luzhi'),
+                    meta: { title: `${it.name}`, icon: 'el-icon-position' }
+                  }
+                  item.children.push(rout)
                 }
-                item.children.push(rout)
               })
             }
           })
           this.$nextTick(() => {
-            this.$router.push({ path: '/deviceItem/detail/' + devlist[0].id })
+            if (devlist[0].devicetype === 0) {
+              this.$router.push({ path: '/deviceItem/detail/' + devlist[0].id })
+            } else if (devlist[0].devicetype === 1) {
+              this.$router.push({ path: '/deviceItem/detail-luzhi/' + devlist[0].id })
+            }
           })
         } else {
           this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
